@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adventskalender mit Rätseln</title>
     <style>
-        /* --- Styles (unverändert) --- */
+        /* --- Styles --- */
         body {
             font-family: sans-serif;
             background-color: #f4f4f9;
             color: #333;
-            margin: 0;
-            padding: 20px;
+            margin: 0; /* NEU: Keine Standard-Außenabstände */
+            padding: 0; /* NEU: Keine Standard-Innenabstände */
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: center; /* Zentriert den Kalender und andere Elemente horizontal */
+            min-height: 100vh; /* Sorgt dafür, dass der Body mindestens die Höhe des Viewports einnimmt */
         }
 
         h1 {
@@ -29,12 +30,16 @@
             gap: 15px;
             max-width: 1000px;
             width: 100%;
+            margin: 0 auto; /* NEU: Zentriert den Kalender horizontal */
+            box-sizing: border-box; /* Stellt sicher, dass Padding in der Breite enthalten ist */
         }
 
+        /* NEU: Angepasste Media Queries für 3 Spalten auf Handys */
         @media (max-width: 600px) {
             #calendar {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 10px;
+                grid-template-columns: repeat(3, 1fr); /* NEU: 3 Spalten auf kleinen Bildschirmen */
+                gap: 15px; /* NEU: Einheitlicherer Abstand auf Handys */
+                padding: 0 10px; /* NEU: Horizontaler Innenabstand, damit die Türen nicht ganz am Rand kleben */
             }
         }
 
@@ -86,7 +91,7 @@
             cursor: pointer;
         }
         
-        /* --- 3. Rätsel-Modal --- */
+        /* Rätsel-Modal (unverändert) */
         .modal {
             display: none;
             position: fixed;
@@ -137,7 +142,7 @@
             font-size: 1em;
         }
         
-        /* --- 4. Fortschrittsanzeige --- */
+        /* Fortschrittsanzeige */
         #progress-display-container {
             margin-top: 30px;
             padding: 20px;
@@ -147,15 +152,18 @@
             width: 90%;
             max-width: 800px;
             text-align: center;
+            box-sizing: border-box;
         }
         
         #progress-display {
             font-family: monospace;
             font-size: 2em;
-            letter-spacing: 0.5em;
+            letter-spacing: 0.3em; /* NEU: Reduzierter Buchstabenabstand für bessere Zeilenumbrüche */
             color: #c0392b;
             font-weight: bold;
-            white-space: pre-wrap;
+            word-break: break-word; /* NEU: Ermöglicht Umbrüche innerhalb von Wörtern */
+            white-space: pre-wrap; 
+            padding: 10px 0; /* NEU: Vertikaler Innenabstand */
         }
 
         #final-message-text {
@@ -166,7 +174,7 @@
             display: none;
         }
 
-        /* Stil für den Reset-Knopf */
+        /* Stil für den Reset-Knopf (unverändert) */
         #reset-button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -177,6 +185,7 @@
             cursor: pointer;
             font-size: 1em;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* NEU: Etwas Abstand nach unten */
         }
     </style>
 </head>
@@ -256,7 +265,6 @@
         
         // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG ---
         function createConstrainedAssignments() {
-            // 1. Gruppiere Rätsel-Indizes nach Anfangsbuchstaben (K, A, L, etc.)
             const riddleGroups = {};
             allRiddles.forEach((riddle, index) => {
                 const letter = riddle.answer.toUpperCase().charAt(0);
@@ -264,7 +272,6 @@
                 riddleGroups[letter].push(index); 
             });
 
-            // 2. Gruppiere Zielpositionen (1-24) nach erforderlichem Buchstaben
             const positionGroups = {};
             for (let i = 0; i < NUM_DOORS; i++) {
                 const requiredLetter = TARGET_LETTERS.charAt(i);
@@ -272,25 +279,22 @@
                 positionGroups[requiredLetter].push(i + 1); 
             }
 
-            // 3. Erstelle Paare: [Rätsel-Index] wird mit [Ziel-Position] desselben Buchstabentyps verbunden
             let riddlePositionPairs = [];
             for (const letter in riddleGroups) {
                 const riddles = riddleGroups[letter];
                 const positions = positionGroups[letter];
                 
-                // Mische beide Gruppen, um die Zufälligkeit innerhalb der Regel zu gewährleisten
                 shuffleArray(riddles); 
                 shuffleArray(positions); 
                 
                 for (let i = 0; i < riddles.length; i++) {
                     riddlePositionPairs.push({
                         riddleIndex: riddles[i],
-                        targetPosition: positions[i] // Passt immer, da Buchstaben übereinstimmen
+                        targetPosition: positions[i]
                     });
                 }
             }
             
-            // 4. Mische die resultierenden Paare, um sie zufällig den Türen 1-24 zuzuordnen
             shuffleArray(riddlePositionPairs); 
 
             const doorAssignments = {};
@@ -309,7 +313,6 @@
             localStorage.setItem('assignments', JSON.stringify(assignments));
         }
 
-        // Speichert den enthüllten Buchstaben ('L', 'K', etc.) an der Zielposition (1-24)
         let revealedLetters = JSON.parse(localStorage.getItem('revealedLetters')) || {}; 
         let currentDoorNumber = null;
 
@@ -325,7 +328,7 @@
         function canOpenDoor(day) {
             // ************************************************
             // *** TESTMODUS HIER AKTIVIEREN: LÖSCHE die nächste Zeile für den Live-Betrieb ***
-            // return true; 
+            return true; 
             // ************************************************
             
             const today = new Date(); 
@@ -495,12 +498,10 @@
             const revealedLetter = riddleData.answer.toUpperCase().charAt(0); 
 
             if (userAnswer === correctAnswer) {
-                // *** WICHTIGE PRÜFUNG: Ist der enthüllte Buchstabe der korrekte Buchstabe für diese Position? ***
+                // Diese Prüfung ist nun redundant durch createConstrainedAssignments, aber schadet nicht.
                 const requiredLetter = TARGET_LETTERS.charAt(targetPosition - 1);
-
                 if (revealedLetter !== requiredLetter) {
-                    // DIESER FEHLER SOLLTE DURCH createConstrainedAssignments() VERHINDERT WERDEN.
-                    console.error("LOGIKFEHLER: Der enthüllte Buchstabe passt nicht zur Zielposition!");
+                    console.error("LOGIKFEHLER (sollte nicht passieren): Der enthüllte Buchstabe passt nicht zur Zielposition!");
                 }
                 
                 feedbackMsg.style.display = 'none';
