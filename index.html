@@ -143,7 +143,7 @@
         /* Fortschrittsanzeige (Original-Layout beibehalten) */
         #progress-display-container {
             margin-top: 30px;
-            padding: 20px;
+            padding: 10px;
             background-color: #ecf0f1;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -152,14 +152,16 @@
             text-align: center;
         }
         
-        #progress-display {
+        #progress-display{
             font-family: monospace;
             font-size: 2em;
-            letter-spacing: 0.5em; /* ORIGINAL: 0.5em Letter Spacing */
+            letter-spacing: 0.1em;
             color: #c0392b;
             font-weight: bold;
-            white-space: pre-wrap; 
-            /* ORIGINAL: Keine zusätzlichen Paddings */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            line-height: 1.5;
         }
 
         #final-message-text {
@@ -190,7 +192,6 @@
         </div>
     
     <div id="progress-display-container">
-        <h2>Dein Lösungssatz:</h2>
         <div id="progress-display"></div> 
         <div id="final-message-text">LASS UNS KAKAO TRINKEN GEHEN</div>
     </div>
@@ -553,6 +554,7 @@
     </script>
 </body>
 </html>
+
 
 
 
