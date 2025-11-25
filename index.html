@@ -16,12 +16,27 @@
             flex-direction: column;
             align-items: center;
         }
+        
+        /* NEUER CONTAINER: Ermöglicht die flexible Anpassung der h1 */
+        .h1-wrapper {
+            width: 100%; /* Nimmt die volle Breite ein */
+            display: flex;
+            overflow: hidden; 
+            margin-bottom: 30px; 
+            padding: 0 10px; 
+            box-sizing: border-box;
+        }
 
         h1 {
             color: #c0392b;
-            margin-bottom: 30px;
             text-align: center;
-            font-size: 2em; /* Größe der Überschrift */
+            font-size: 2em;
+            
+            /* Zentrierung und Logik zur Verhinderung des Zeilenumbruchs */
+            margin: 0 auto; 
+            white-space: nowrap; /* Verhindert, dass Text umbricht */
+            flex-shrink: 1; /* Ermöglicht, dass der Text schrumpft */
+            min-width: 0;
         }
 
         #calendar {
@@ -32,7 +47,6 @@
             width: 100%;
         }
 
-        /* 4 Spalten auf Handys */
         @media (max-width: 600px) {
             #calendar {
                 grid-template-columns: repeat(4, 1fr);
@@ -106,13 +120,13 @@
             width: 80%;
             border-radius: 5px;
             text-align: center;
-            font-size: 16px; /* Wichtig: Verhindert Zoom auf Handys */
+            font-size: 16px; /* Verhindert Zoom auf Handys */
         }
 
         /* --- 4. Fortschrittsanzeige --- */
         #progress-display-container {
             margin-top: 30px;
-            padding: 10px; /* Reduziert für kleineren Kasten */
+            padding: 10px; 
             background-color: #ecf0f1;
             border-radius: 10px;
             width: 90%;
@@ -126,7 +140,7 @@
             letter-spacing: 0.1em;
             color: #c0392b;
             font-weight: bold;
-            display: flex; /* Flexbox für bessere Lücken-Darstellung */
+            display: flex; 
             flex-wrap: wrap; 
             justify-content: center;
             line-height: 1.5; 
@@ -156,7 +170,9 @@
 </head>
 <body>
 
-    <h1>✨ Adventskalender für Luisa ✨</h1> 
+    <div class="h1-wrapper">
+        <h1>✨ Adventskalender für Luisa ✨</h1> 
+    </div>
 
     <div id="calendar">
     </div>
@@ -221,6 +237,7 @@
             }
         }
         
+        // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG ---
         function createConstrainedAssignments() {
             const riddleGroups = {};
             allRiddles.forEach((riddle, index) => {
@@ -263,6 +280,7 @@
         }
 
 
+        // INITIALISIERUNG DER ZUORDNUNGEN
         let assignments = JSON.parse(localStorage.getItem('assignments'));
         if (!assignments) {
             assignments = createConstrainedAssignments();
@@ -283,8 +301,8 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             // ************************************************
-            // *** TESTMODUS HIER AKTIVIEREN: LÖSCHE die nächste Zeile für den Live-Betrieb ***
-            // return true; 
+            // *** TESTMODUS HIER AKTIVIEREN: return true; (Lösche die nächste Zeile für den Live-Betrieb) ***
+            return true; 
             // ************************************************
             
             const today = new Date(); 
