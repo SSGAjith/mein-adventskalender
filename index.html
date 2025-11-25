@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adventskalender für Luisa</title>
     <style>
-        /* --- Styles (Original-Layout beibehalten, nur Überschrift angepasst) --- */
+        /* --- 1. Layout & Responsive Design --- */
         body {
             font-family: sans-serif;
             background-color: #f4f4f9;
             color: #333;
             margin: 0;
-            padding: 20px; /* ORIGINAL: 20px Padding */
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -21,7 +21,7 @@
             color: #c0392b;
             margin-bottom: 30px;
             text-align: center;
-            font-size: 1.4em; /* NEU: Überschrift etwas kleiner */
+            font-size: 2em; /* Größe der Überschrift */
         }
 
         #calendar {
@@ -30,34 +30,25 @@
             gap: 15px;
             max-width: 1000px;
             width: 100%;
-            /* ORIGINAL: Kein zusätzlicher Margin hier, da body Padding hat */
         }
 
+        /* 4 Spalten auf Handys */
         @media (max-width: 600px) {
             #calendar {
-                grid-template-columns: repeat(4, 1fr); /* ORIGINAL: 4 Spalten auf Handys */
-                gap: 10px; /* ORIGINAL: 10px Gap auf Handys */
-                /* ORIGINAL: Kein zusätzlicher Padding hier */
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
             }
         }
 
-        @media (min-width: 601px) and (max-width: 900px) {
-            #calendar {
-                grid-template-columns: repeat(5, 1fr);
-            }
-        }
-
+        /* --- 2. Tür-Stile --- */
         .door {
             background-color: #27ae60;
             border: 4px solid #c0392b;
             border-radius: 10px;
-            padding: 0;
-            text-align: center;
             aspect-ratio: 1 / 1;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             position: relative;
             cursor: pointer;
-            overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
@@ -75,7 +66,6 @@
             font-weight: bold;
             color: white;
             z-index: 2;
-            transition: opacity 0.3s;
         }
 
         .door.locked {
@@ -86,10 +76,9 @@
         
         .door.opened {
             background-color: #e67e22;
-            cursor: pointer;
         }
         
-        /* Rätsel-Modal (unverändert) */
+        /* --- 3. Modal und Eingabe --- */
         .modal {
             display: none;
             position: fixed;
@@ -98,7 +87,6 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
             background-color: rgba(0, 0, 0, 0.7);
         }
 
@@ -106,63 +94,44 @@
             background-color: #fff;
             margin: 15% auto;
             padding: 30px;
-            border: 1px solid #888;
             width: 90%;
             max-width: 500px;
             border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
-
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
+        
         .riddle-input {
             padding: 10px;
             margin: 15px 0;
             width: 80%;
-            border: 1px solid #ccc;
             border-radius: 5px;
             text-align: center;
-            font-size: 16px;
+            font-size: 16px; /* Wichtig: Verhindert Zoom auf Handys */
         }
 
-        .riddle-button {
-            background-color: #c0392b;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        
-        /* Fortschrittsanzeige (Original-Layout beibehalten) */
+        /* --- 4. Fortschrittsanzeige --- */
         #progress-display-container {
             margin-top: 30px;
-            padding: 10px;
+            padding: 10px; /* Reduziert für kleineren Kasten */
             background-color: #ecf0f1;
             border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 800px;
             text-align: center;
         }
         
-        #progress-display{
+        #progress-display {
             font-family: monospace;
             font-size: 2em;
             letter-spacing: 0.1em;
             color: #c0392b;
             font-weight: bold;
-            display: flex;
-            flex-wrap: wrap;
+            display: flex; /* Flexbox für bessere Lücken-Darstellung */
+            flex-wrap: wrap; 
             justify-content: center;
-            line-height: 1.5;
+            line-height: 1.5; 
+            padding: 10px 0;
+            white-space: pre-wrap; 
         }
 
         #final-message-text {
@@ -173,9 +142,8 @@
             display: none;
         }
 
-        /* Stil für den Reset-Knopf (unverändert) */
         #reset-button {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 10px 20px;
             background-color: #3498db;
             color: white;
@@ -183,14 +151,15 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
 
-    <h1 style="font-size: 1.4em;">✨ Adventskalender für Luisa ✨</h1> <div id="calendar">
-        </div>
+    <h1>✨ Adventskalender für Luisa ✨</h1> 
+
+    <div id="calendar">
+    </div>
     
     <div id="progress-display-container">
         <div id="progress-display"></div> 
@@ -214,43 +183,37 @@
 
     <script>
         // --- 1. DATEN UND INITIALISIERUNG ---
-        
-        // Die visuelle Vorlage für den Satz (24 Buchstaben + Leerzeichen)
         const DISPLAY_MESSAGE = "LASS UNS KAKAO TRINKEN GEHEN "; 
         const NUM_DOORS = 24;
-        
-        // Die Buchstabenfolge, die erreicht werden muss.
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
-        // Rätsel-Pool: Nur Fragen und Antworten.
         const allRiddles = [
-            { question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" }, // L
-            { question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" }, // A
-            { question: "Wenn es regnet, steht er bereit. Mit ihm wird man nicht nass. Was ist das?", answer: "schirm" }, // S
-            { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "schnee" }, // S
-            { question: "Ich bin rot oder grün und hänge oft am Baum. Wer mich isst, dem geht ein Traum in Erfüllung. Was bin ich?", answer: "uhr" }, // U
-            { question: "Ich fliege ohne Flügel und weine ohne Augen. Was bin ich?", answer: "nebel" }, // N
-            { question: "Was muss man brechen, bevor man es benutzen kann?", answer: "schokolade" }, // S
-            { question: "Ich kann mit einer Handvoll Sand gefüllt werden, aber nicht mit einer Handvoll Wasser. Was bin ich?", answer: "korb" }, // K
-            { question: "Was wird größer, je mehr man wegnimmt?", answer: "aushöhlung" }, // A
-            { question: "Ich habe ein Bett, aber schlafe nie. Ich habe einen Mund, aber spreche nie. Was bin ich?", answer: "kissen" }, // K
-            { question: "Was kommt einmal in einer Minute, zweimal in einem Moment, aber niemals in tausend Jahren?", answer: "anziehungskraft" }, // A
-            { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "ofen" }, // O
-            { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "tag" }, // T
-            { question: "Was kann man fangen, aber nicht werfen?", answer: "regenbogen" }, // R
-            { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "insel" }, // I
-            { question: "Ich kann laufen, aber habe keine Füße. Was bin ich?", answer: "nacht" }, // N
-            { question: "Was wird mehr, je mehr man es teilt?", answer: "kenntnis" }, // K
-            { question: "Was ist so zerbrechlich, dass es bricht, sobald man seinen Namen ausspricht?", answer: "einsamkeit" }, // E
-            { question: "Was gehört dir, wird aber von anderen häufiger benutzt?", answer: "name" }, // N
-            { question: "Was hat keinen Körper, aber kann laufen?", answer: "gedanke" }, // G
-            { question: "Was hat einen Fuß, aber kein Bein?", answer: "ente" }, // E
-            { question: "Ich habe nur zwei Buchstaben, repräsentiere aber Tausende von Wörtern. Was bin ich?", answer: "hai" }, // H
-            { question: "Was kann man essen, bevor es überhaupt geboren wurde?", answer: "ei" }, // E
-            { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } // N
+            { question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" }, 
+            { question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" }, 
+            { question: "Wenn es regnet, steht er bereit. Mit ihm wird man nicht nass. Was ist das?", answer: "schirm" }, 
+            { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "schnee" }, 
+            { question: "Ich bin rot oder grün und hänge oft am Baum. Wer mich isst, dem geht ein Traum in Erfüllung. Was bin ich?", answer: "uhr" }, 
+            { question: "Ich fliege ohne Flügel und weine ohne Augen. Was bin ich?", answer: "nebel" }, 
+            { question: "Was muss man brechen, bevor man es benutzen kann?", answer: "schokolade" }, 
+            { question: "Ich kann mit einer Handvoll Sand gefüllt werden, aber nicht mit einer Handvoll Wasser. Was bin ich?", answer: "korb" }, 
+            { question: "Was wird größer, je mehr man wegnimmt?", answer: "aushöhlung" }, 
+            { question: "Ich habe ein Bett, aber schlafe nie. Ich habe einen Mund, aber spreche nie. Was bin ich?", answer: "kissen" }, 
+            { question: "Was kommt einmal in einer Minute, zweimal in einem Moment, aber niemals in tausend Jahren?", answer: "anziehungskraft" }, 
+            { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "ofen" }, 
+            { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "tag" }, 
+            { question: "Was kann man fangen, aber nicht werfen?", answer: "regenbogen" }, 
+            { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "insel" }, 
+            { question: "Ich kann laufen, aber habe keine Füße. Was bin ich?", answer: "nacht" }, 
+            { question: "Was wird mehr, je mehr man es teilt?", answer: "kenntnis" }, 
+            { question: "Was ist so zerbrechlich, dass es bricht, sobald man seinen Namen ausspricht?", answer: "einsamkeit" }, 
+            { question: "Was gehört dir, wird aber von anderen häufiger benutzt?", answer: "name" }, 
+            { question: "Was hat keinen Körper, aber kann laufen?", answer: "gedanke" }, 
+            { question: "Was hat einen Fuß, aber kein Bein?", answer: "ente" }, 
+            { question: "Ich habe nur zwei Buchstaben, repräsentiere aber Tausende von Wörtern. Was bin ich?", answer: "hai" }, 
+            { question: "Was kann man essen, bevor es überhaupt geboren wurde?", answer: "ei" }, 
+            { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
         ];
         
-        // Hilfsfunktion zum Mischen
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -258,7 +221,6 @@
             }
         }
         
-        // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG ---
         function createConstrainedAssignments() {
             const riddleGroups = {};
             allRiddles.forEach((riddle, index) => {
@@ -301,7 +263,6 @@
         }
 
 
-        // INITIALISIERUNG DER ZUORDNUNGEN
         let assignments = JSON.parse(localStorage.getItem('assignments'));
         if (!assignments) {
             assignments = createConstrainedAssignments();
@@ -323,7 +284,7 @@
         function canOpenDoor(day) {
             // ************************************************
             // *** TESTMODUS HIER AKTIVIEREN: LÖSCHE die nächste Zeile für den Live-Betrieb ***
-            return true; 
+            // return true; 
             // ************************************************
             
             const today = new Date(); 
@@ -353,7 +314,6 @@
 
                 const assignment = assignments[i];
                 if (!assignment) {
-                    console.error(`Zuordnung für Tür ${i} fehlt!`);
                     continue;
                 }
                 
@@ -440,7 +400,6 @@
             
             const assignment = assignments[currentDoorNumber]; 
             if (!assignment) {
-                 alert(`FEHLER: Zuordnung für Tür ${currentDoorNumber} konnte nicht abgerufen werden! Bitte Cache leeren.`);
                  return;
             }
             
@@ -453,7 +412,6 @@
             const currentLetter = isOpened ? revealedLetters[targetPosition] : revealedLetterCandidate;
 
             if (!riddleData) {
-                alert(`FEHLER: Rätsel-Daten für Tür ${currentDoorNumber} konnten nicht abgerufen werden!`);
                 return;
             }
             
@@ -494,9 +452,6 @@
 
             if (userAnswer === correctAnswer) {
                 const requiredLetter = TARGET_LETTERS.charAt(targetPosition - 1);
-                if (revealedLetter !== requiredLetter) {
-                    console.error("LOGIKFEHLER (sollte nicht passieren): Der enthüllte Buchstabe passt nicht zur Zielposition!");
-                }
                 
                 feedbackMsg.style.display = 'none';
                 successMsg.style.display = 'block';
@@ -555,14 +510,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
