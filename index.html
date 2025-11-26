@@ -21,21 +21,14 @@
 
         h1 {
             color: #c0392b;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             text-align: center;
             
-            /* NEU: Erzeugt 20px Puffer links und rechts */
-            margin: 0 20px 20px 20px; 
-            
             font-size: 6vw; 
+            
             white-space: nowrap; 
-            
-            /* ALT ENTFERNT: padding: 0 5px; box-sizing: border-box; */
-            
-            /* Setzt die Breite und Zentrierung über Flexbox */
-            width: 100%;
-            display: flex;
-            justify-content: center;
+            padding: 0 5px; 
+            box-sizing: border-box;
         }
 
         #calendar {
@@ -123,6 +116,8 @@
             border-radius: 5px;
             text-align: center;
             font-size: 16px; 
+            /* NEU: Verhindert, dass iOS die Schriftgröße skaliert und damit den Zoom auslöst */
+            -webkit-text-size-adjust: 100%; 
         }
 
         /* --- 4. Fortschrittsanzeige --- */
@@ -301,8 +296,8 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             const today = new Date(); 
-            const currentMonth = 12;
-            const currentDay = 7;
+            const currentMonth = today.getMonth() + 1;
+            const currentDay = today.getDate();
             
             if (currentMonth !== 12) {
                 return false;
@@ -523,7 +518,3 @@
     </script>
 </body>
 </html>
-
-
-
-
