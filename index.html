@@ -11,24 +11,29 @@
             background-color: #f4f4f9;
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 20px; /* Hier ist der generelle Puffer des Bodys */
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* WICHTIG: Verhindert horizontales Scrollen */
             overflow-x: hidden; 
         }
 
         h1 {
             color: #c0392b;
-            margin-bottom: 30px;
             text-align: center;
+            font-size: 6vw; /* Skaliert die Größe proportional zur Bildschirmbreite */
+            white-space: nowrap; /* Verhindert Zeilenumbruch */
             
-            font-size: 6vw; 
+            /* NEU: Ein fester Außenabstand (margin) links und rechts von 20px */
+            /* Dadurch hat der Titel immer einen Puffer zum Rand */
+            margin: 0 20px 30px 20px; /* oben rechts unten links */
             
-            white-space: nowrap; 
-            padding: 0 5px; 
-            box-sizing: border-box;
+            /* Die folgenden Regeln sind nicht mehr nötig oder kontraproduktiv */
+            /* width: 100%; */
+            /* display: flex; */
+            /* justify-content: center; */
+            /* padding: 0 5px; */
+            /* box-sizing: border-box; */
         }
 
         #calendar {
@@ -45,7 +50,7 @@
                 gap: 10px;
             }
             h1 {
-                font-size: 7vw; 
+                font-size: 7vw; /* Auf kleineren Bildschirmen etwas größere Schrift, da der Platz da ist */
             }
         }
 
@@ -116,7 +121,6 @@
             border-radius: 5px;
             text-align: center;
             font-size: 16px; 
-            /* NEU: Verhindert, dass iOS die Schriftgröße skaliert und damit den Zoom auslöst */
             -webkit-text-size-adjust: 100%; 
         }
 
@@ -296,8 +300,8 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             const today = new Date(); 
-            const currentMonth = today.getMonth() + 1;
-            const currentDay = today.getDate();
+            const currentMonth = 12;
+            const currentDay = 7;
             
             if (currentMonth !== 12) {
                 return false;
@@ -455,7 +459,7 @@
             const userAnswer = cleanAnswer(answerInput.value);
             const correctAnswer = cleanAnswer(riddleData.answer); 
             
-            const targetPosition = assignment.targetPosition; 
+            const targetPosition = assignment.riddleIndex + 1; // Assuming target position is 1-indexed riddle index
             const revealedLetter = riddleData.answer.toUpperCase().charAt(0); 
 
             if (userAnswer === correctAnswer) {
