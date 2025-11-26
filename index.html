@@ -21,7 +21,7 @@
 
         h1 {
             color: #c0392b;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             text-align: center;
             
             /* NEU: Erzeugt 20px Puffer links und rechts */
@@ -301,8 +301,8 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             const today = new Date(); 
-            const currentMonth = today.getMonth() + 1;
-            const currentDay = today.getDate();
+            const currentMonth = 12;
+            const currentDay = 7;
             
             if (currentMonth !== 12) {
                 return false;
@@ -523,5 +523,6 @@
     </script>
 </body>
 </html>
+
 
 
