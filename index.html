@@ -1,552 +1,1035 @@
 <!DOCTYPE html>
+
 <html lang="de">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Adventskalender für Luisa</title>
+
     <style>
+
         /* --- 1. Layout & Responsive Design --- */
+
         body {
+
             font-family: sans-serif;
+
             background-color: #f4f4f9;
+
             color: #333;
+
             margin: 0;
+
             padding: 20px;
+
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
+
         }
 
-        /* Überschrift-Layout: Verhindert Umbruch und Überlauf */
+
+
         h1 {
+
             color: #c0392b;
+
             margin-bottom: 30px;
+
             text-align: center;
-            padding: 0 5px; 
-            box-sizing: border-box;
-            width: 100%;
+
             
-            /* Flexbox-Container für Stern- und Text-Steuerung */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap; /* Verhindert Umbruch */
-            overflow: hidden; /* Verhindert Überlauf */
-        }
-        
-        h1 .title-text {
-            /* Skaliert die Größe proportional zur Bildschirmbreite */
+
+            /* NEU: Skaliert die Größe proportional zur Bildschirmbreite */
+
             font-size: 6vw; 
-            flex-shrink: 1; /* Der Text schrumpft, wenn der Platz eng wird */
-            min-width: 0; 
-            margin: 0 5px;
+
+            
+
+            white-space: nowrap; /* Verhindert Zeilenumbruch */
+
+            padding: 0 5px; /* Kleiner Puffer an den Seiten */
+
+            box-sizing: border-box;
+
         }
 
-        h1 .star {
-            font-size: 2em; 
-            flex-shrink: 0; /* Die Sterne schrumpfen nicht */
-        }
-        
-        @media (max-width: 600px) {
-            h1 .title-text {
-                font-size: 7vw;
-            }
-            h1 .star {
-                font-size: 1.8em;
-            }
-            #calendar {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 10px;
-            }
-        }
+
 
         #calendar {
+
             display: grid;
+
             grid-template-columns: repeat(6, 1fr);
+
             gap: 15px;
+
             max-width: 1000px;
-            width: 90%; 
-            margin: 0 auto;
+
+            width: 100%;
+
         }
 
-        /* --- 2. Tür-Stile --- */
-        .door {
-            background-color: #27ae60;
-            border: 4px solid #c0392b;
-            border-radius: 10px;
-            aspect-ratio: 1 / 1;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+
+
+        @media (max-width: 600px) {
+
+            #calendar {
+
+                grid-template-columns: repeat(4, 1fr);
+
+                gap: 10px;
+
+            }
+
+            /* OPTIONAL: Auf kleinsten Bildschirmen die Schriftgröße etwas kleiner stellen, um sicherzugehen */
+
+            h1 {
+
+                font-size: 7vw; 
+
+            }
+
         }
+
+
+
+        /* --- 2. Tür-Stile (Unverändert) --- */
+
+        .door {
+
+            background-color: #27ae60;
+
+            border: 4px solid #c0392b;
+
+            border-radius: 10px;
+
+            aspect-ratio: 1 / 1;
+
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+            position: relative;
+
+            cursor: pointer;
+
+            transition: transform 0.2s, box-shadow 0.2s;
+
+        }
+
+
 
         .door:hover:not(.locked) {
+
             transform: translateY(-3px);
+
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+
         }
+
+
 
         .door-number {
+
             position: absolute;
+
             top: 50%;
+
             left: 50%;
+
             transform: translate(-50%, -50%);
+
             font-size: 2.5em;
+
             font-weight: bold;
+
             color: white;
+
             z-index: 2;
+
         }
+
+
 
         .door.locked {
+
             background-color: #95a5a6;
+
             cursor: default;
+
             opacity: 0.7;
+
         }
+
         
+
         .door.opened {
+
             background-color: #e67e22;
+
         }
+
         
+
         /* --- 3. Modal und Eingabe --- */
+
         .modal {
+
             display: none;
+
             position: fixed;
+
             z-index: 100;
+
             left: 0;
+
             top: 0;
+
             width: 100%;
+
             height: 100%;
+
             background-color: rgba(0, 0, 0, 0.7);
+
         }
+
+
 
         .modal-content {
+
             background-color: #fff;
+
             margin: 15% auto;
+
             padding: 30px;
+
             width: 90%;
+
             max-width: 500px;
+
             border-radius: 10px;
+
             text-align: center;
-        }
-        
-        .riddle-input {
-            padding: 10px;
-            margin: 15px 0;
-            width: 80%;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px; 
+
         }
 
-        .riddle-button {
-            background-color: #c0392b;
-            color: white;
-            padding: 10px 20px;
-            border: none;
+        
+
+        .riddle-input {
+
+            padding: 10px;
+
+            margin: 15px 0;
+
+            width: 80%;
+
             border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        
-        /* --- 4. Fortschrittsanzeige --- */
-        #progress-display-container {
-            margin-top: 30px;
-            padding: 10px; 
-            background-color: #ecf0f1;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 800px;
+
             text-align: center;
+
+            font-size: 16px; 
+
         }
+
+
+
+        /* --- 4. Fortschrittsanzeige --- */
+
+        #progress-display-container {
+
+            margin-top: 30px;
+
+            padding: 10px; 
+
+            background-color: #ecf0f1;
+
+            border-radius: 10px;
+
+            width: 90%;
+
+            max-width: 800px;
+
+            text-align: center;
+
+        }
+
         
+
         #progress-display {
+
             font-family: monospace;
+
             font-size: 2em;
+
             letter-spacing: 0.1em;
+
             color: #c0392b;
+
             font-weight: bold;
+
             display: flex; 
+
             flex-wrap: wrap; 
+
             justify-content: center;
+
             line-height: 1.5; 
+
             padding: 10px 0;
+
             white-space: pre-wrap; 
+
         }
+
+
 
         #final-message-text {
+
             color: #27ae60;
+
             font-size: 1.5em;
+
             margin-top: 10px;
+
             font-weight: bold;
+
             display: none;
+
         }
+
+
 
         #reset-button {
+
             margin-top: 20px;
+
             padding: 10px 20px;
+
             background-color: #3498db;
+
             color: white;
+
             border: none;
+
             border-radius: 5px;
+
             cursor: pointer;
+
             font-size: 1em;
+
         }
+
     </style>
+
 </head>
+
 <body>
 
-    <h1>
-        <span class="star">✨</span>
-        <span class="title-text">Adventskalender für Luisa</span>
-        <span class="star">✨</span>
-    </h1> 
+
+
+    <h1>✨ Adventskalender für Luisa ✨</h1> 
+
+
 
     <div id="calendar">
+
     </div>
+
     
+
     <div id="progress-display-container">
+
         <div id="progress-display"></div> 
+
         <div id="final-message-text">LASS UNS KAKAO TRINKEN GEHEN</div>
+
     </div>
+
     <button id="reset-button" onclick="resetCalendar()">Fortschritt zurücksetzen</button>
 
 
+
+
+
     <div id="riddleModal" class="modal">
+
         <div class="modal-content">
+
             <span class="close-button">&times;</span>
+
             <h2 id="modal-title">Rätsel zu Tür X</h2>
+
             <p id="riddle-text">Rätselfrage...</p>
+
             <input type="text" id="riddle-answer" class="riddle-input" placeholder="Deine Antwort eingeben...">
+
             <button id="submit-answer" class="riddle-button">Antwort prüfen</button>
+
             <p id="feedback-message" style="margin-top: 10px; font-weight: bold;"></p>
+
             <p id="success-message" style="margin-top: 10px; color: #27ae60; font-weight: bold; display: none;">Richtig! Tür geöffnet!</p>
+
         </div>
+
     </div>
 
 
+
+
+
     <script>
+
         // --- 1. DATEN UND INITIALISIERUNG ---
+
         const DISPLAY_MESSAGE = "LASS UNS KAKAO TRINKEN GEHEN "; 
+
         const NUM_DOORS = 24;
+
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
+
+
         const allRiddles = [
+
             { question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" }, 
+
             { question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" }, 
+
             { question: "Wenn es regnet, steht er bereit. Mit ihm wird man nicht nass. Was ist das?", answer: "schirm" }, 
+
             { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "schnee" }, 
+
             { question: "Ich bin rot oder grün und hänge oft am Baum. Wer mich isst, dem geht ein Traum in Erfüllung. Was bin ich?", answer: "uhr" }, 
+
             { question: "Ich fliege ohne Flügel und weine ohne Augen. Was bin ich?", answer: "nebel" }, 
+
             { question: "Was muss man brechen, bevor man es benutzen kann?", answer: "schokolade" }, 
+
             { question: "Ich kann mit einer Handvoll Sand gefüllt werden, aber nicht mit einer Handvoll Wasser. Was bin ich?", answer: "korb" }, 
+
             { question: "Was wird größer, je mehr man wegnimmt?", answer: "aushöhlung" }, 
+
             { question: "Ich habe ein Bett, aber schlafe nie. Ich habe einen Mund, aber spreche nie. Was bin ich?", answer: "kissen" }, 
+
             { question: "Was kommt einmal in einer Minute, zweimal in einem Moment, aber niemals in tausend Jahren?", answer: "anziehungskraft" }, 
+
             { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "ofen" }, 
+
             { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "tag" }, 
+
             { question: "Was kann man fangen, aber nicht werfen?", answer: "regenbogen" }, 
+
             { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "insel" }, 
+
             { question: "Ich kann laufen, aber habe keine Füße. Was bin ich?", answer: "nacht" }, 
+
             { question: "Was wird mehr, je mehr man es teilt?", answer: "kenntnis" }, 
+
             { question: "Was ist so zerbrechlich, dass es bricht, sobald man seinen Namen ausspricht?", answer: "einsamkeit" }, 
+
             { question: "Was gehört dir, wird aber von anderen häufiger benutzt?", answer: "name" }, 
+
             { question: "Was hat keinen Körper, aber kann laufen?", answer: "gedanke" }, 
+
             { question: "Was hat einen Fuß, aber kein Bein?", answer: "ente" }, 
+
             { question: "Ich habe nur zwei Buchstaben, repräsentiere aber Tausende von Wörtern. Was bin ich?", answer: "hai" }, 
+
             { question: "Was kann man essen, bevor es überhaupt geboren wurde?", answer: "ei" }, 
+
             { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
+
         ];
+
         
+
         function shuffleArray(array) {
+
             for (let i = array.length - 1; i > 0; i--) {
+
                 const j = Math.floor(Math.random() * (i + 1));
+
                 [array[i], array[j]] = [array[j], array[i]];
+
             }
+
         }
+
         
+
         // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG ---
+
         function createConstrainedAssignments() {
+
             const riddleGroups = {};
+
             allRiddles.forEach((riddle, index) => {
+
                 const letter = riddle.answer.toUpperCase().charAt(0);
+
                 if (!riddleGroups[letter]) riddleGroups[letter] = [];
+
                 riddleGroups[letter].push(index); 
+
             });
 
+
+
             const positionGroups = {};
+
             for (let i = 0; i < NUM_DOORS; i++) {
+
                 const requiredLetter = TARGET_LETTERS.charAt(i);
+
                 if (!positionGroups[requiredLetter]) positionGroups[requiredLetter] = [];
+
                 positionGroups[requiredLetter].push(i + 1); 
+
             }
+
+
 
             let riddlePositionPairs = [];
+
             for (const letter in riddleGroups) {
+
                 const riddles = riddleGroups[letter];
+
                 const positions = positionGroups[letter];
+
                 
+
                 shuffleArray(riddles); 
+
                 shuffleArray(positions); 
+
                 
+
                 for (let i = 0; i < riddles.length; i++) {
+
                     riddlePositionPairs.push({
+
                         riddleIndex: riddles[i],
+
                         targetPosition: positions[i]
+
                     });
+
                 }
+
             }
+
             
+
             shuffleArray(riddlePositionPairs); 
 
+
+
             const doorAssignments = {};
+
             for (let i = 1; i <= NUM_DOORS; i++) {
+
                 doorAssignments[i] = riddlePositionPairs[i - 1];
+
             }
 
+
+
             return doorAssignments;
+
         }
+
+
+
 
 
         // INITIALISIERUNG DER ZUORDNUNGEN
+
         let assignments = JSON.parse(localStorage.getItem('assignments'));
+
         if (!assignments) {
+
             assignments = createConstrainedAssignments();
+
             localStorage.setItem('assignments', JSON.stringify(assignments));
+
         }
 
+
+
         let revealedLetters = JSON.parse(localStorage.getItem('revealedLetters')) || {}; 
+
         let currentDoorNumber = null;
 
 
+
+
+
         function cleanAnswer(answer) {
+
             if (!answer) return "";
+
             return answer.toLowerCase()
+
                          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+
                          .replace(/[^a-z0-9]/g, '');
+
         }
+
         
+
         // --- 2. DATUMSLOGIK ---
+
         function canOpenDoor(day) {
+
             const today = new Date(); 
+
             const currentMonth = today.getMonth() + 1;
+
             const currentDay = today.getDate();
+
             
+
             if (currentMonth !== 12) {
+
                 return false;
+
             }
+
             return day <= currentDay;
+
         }
+
+
 
         // --- 3. RENDERN KALENDER ---
+
         function renderCalendar() {
+
             const calendarEl = document.getElementById('calendar');
+
             calendarEl.innerHTML = '';
 
+
+
             for (let i = 1; i <= NUM_DOORS; i++) {
+
                 const doorEl = document.createElement('div');
+
                 doorEl.classList.add('door');
+
                 doorEl.dataset.day = i;
+
                 
+
                 const numberEl = document.createElement('div');
+
                 numberEl.classList.add('door-number');
+
                 numberEl.textContent = i;
+
                 doorEl.appendChild(numberEl);
 
+
+
                 const assignment = assignments[i];
+
                 if (!assignment) {
+
                     continue;
+
                 }
+
                 
+
                 const targetPosition = assignment.targetPosition;
+
                 const isOpened = !!revealedLetters[targetPosition];
+
                 
+
                 if (isOpened) {
+
                     doorEl.classList.add('opened');
+
                 }
+
                 
+
                 if (!canOpenDoor(i) && !isOpened) {
+
                     doorEl.classList.add('locked');
+
                     doorEl.onclick = () => alert(`Du kannst Tür ${i} erst ab dem ${i}. Dezember öffnen!`);
+
                 } else {
+
                     doorEl.onclick = () => openDoor(i);
+
                 }
+
+
 
                 calendarEl.appendChild(doorEl);
+
             }
+
             
+
             updateProgressDisplay();
+
         }
+
         
+
         // --- 4. FORTSCHRITTSANZEIGE LOGIK ---
+
         function updateProgressDisplay() {
+
             const progressEl = document.getElementById('progress-display');
+
             const finalMessageEl = document.getElementById('final-message-text');
+
             
+
             let progressString = '';
+
             let letterCounter = 1; 
 
+
+
             for (let i = 0; i < DISPLAY_MESSAGE.length; i++) {
+
                 const char = DISPLAY_MESSAGE[i];
+
                 
+
                 if (char === ' ') {
+
                     progressString += ' ';
+
                 } else {
+
                     if (letterCounter <= NUM_DOORS && revealedLetters[letterCounter]) {
+
                         progressString += revealedLetters[letterCounter];
+
                     } else {
+
                         progressString += '_';
+
                     }
+
                     letterCounter++; 
+
                 }
+
             }
+
             
+
             progressEl.textContent = progressString;
+
             
+
             const unlockedCount = Object.keys(revealedLetters).length;
+
             
+
             if (unlockedCount === NUM_DOORS) {
+
                  finalMessageEl.style.display = 'block';
+
                  progressEl.style.display = 'none';
+
                  finalMessageEl.textContent = DISPLAY_MESSAGE.trim();
+
             } else {
+
                  finalMessageEl.style.display = 'none';
+
                  progressEl.style.display = 'block';
+
             }
+
         }
+
+
+
 
 
         // --- 5. RESET FUNKTION ---
+
         function resetCalendar() {
+
             if (confirm('Bist du sicher, dass du den Fortschritt und die Zuordnungen zurücksetzen möchtest?')) {
+
                 localStorage.removeItem('revealedLetters'); 
+
                 localStorage.removeItem('assignments'); 
+
                 window.location.reload(); 
+
             }
+
         }
+
         window.resetCalendar = resetCalendar;
 
 
+
+
+
         // --- 6. MODAL/SPIEL-LOGIK ---
+
         
+
         const modal = document.getElementById('riddleModal');
+
         const closeBtn = document.querySelector('.close-button');
+
         const submitBtn = document.getElementById('submit-answer');
+
         const answerInput = document.getElementById('riddle-answer');
+
         const feedbackMsg = document.getElementById('feedback-message');
+
         const successMsg = document.getElementById('success-message');
 
+
+
         function openDoor(day) {
+
             currentDoorNumber = day;
+
             
+
             const assignment = assignments[currentDoorNumber]; 
+
             if (!assignment) {
+
                  return;
+
             }
+
             
+
             const riddleData = allRiddles[assignment.riddleIndex]; 
+
             const targetPosition = assignment.targetPosition; 
+
+
 
             const revealedLetterCandidate = riddleData.answer.toUpperCase().charAt(0);
 
+
+
             const isOpened = !!revealedLetters[targetPosition]; 
+
             const currentLetter = isOpened ? revealedLetters[targetPosition] : revealedLetterCandidate;
 
+
+
             if (!riddleData) {
+
                 return;
+
             }
+
             
+
             if (isOpened) {
+
                 document.getElementById('modal-title').textContent = `Tür ${currentDoorNumber} (Löst Position ${targetPosition} mit Buchstabe "${currentLetter}")`;
+
                 document.getElementById('riddle-text').textContent = "Du hast dieses Rätsel bereits gelöst. Hier ist nochmal die Frage:";
+
                 document.getElementById('riddle-text').innerHTML += `<br><strong>${riddleData.question}</strong>`;
+
                 answerInput.style.display = 'none';
+
                 submitBtn.style.display = 'none';
+
                 feedbackMsg.style.display = 'none';
+
                 successMsg.textContent = `Tür ist geöffnet! Der Buchstabe "${currentLetter}" auf Position ${targetPosition} ist sichtbar.`;
+
                 successMsg.style.display = 'block';
+
                 modal.style.display = 'block';
+
                 return;
+
             }
+
+
 
             document.getElementById('modal-title').textContent = `Rätsel zu Tür ${currentDoorNumber} (Löst Position ${targetPosition})`;
+
             document.getElementById('riddle-text').textContent = riddleData.question;
+
             answerInput.value = '';
+
             answerInput.style.display = 'block';
+
             submitBtn.style.display = 'block';
+
             feedbackMsg.style.display = 'none';
+
             successMsg.style.display = 'none';
 
+
+
             modal.style.display = 'block';
+
         }
+
+
 
         function checkAnswer() {
+
             if (currentDoorNumber === null) return;
+
             
+
             const assignment = assignments[currentDoorNumber];
+
             const riddleData = allRiddles[assignment.riddleIndex];
+
             const userAnswer = cleanAnswer(answerInput.value);
+
             const correctAnswer = cleanAnswer(riddleData.answer); 
+
             
+
             const targetPosition = assignment.targetPosition; 
+
             const revealedLetter = riddleData.answer.toUpperCase().charAt(0); 
 
+
+
             if (userAnswer === correctAnswer) {
+
                 const requiredLetter = TARGET_LETTERS.charAt(targetPosition - 1);
+
                 
+
                 feedbackMsg.style.display = 'none';
+
                 successMsg.style.display = 'block';
+
                 
+
                 if (!revealedLetters[targetPosition]) {
+
                     
+
                     revealedLetters[targetPosition] = revealedLetter;
+
                     localStorage.setItem('revealedLetters', JSON.stringify(revealedLetters));
+
                     
+
                     const doorEl = document.querySelector(`.door[data-day="${currentDoorNumber}"]`);
+
                     doorEl.classList.remove('locked');
+
                     doorEl.classList.add('opened');
+
                     
+
                     successMsg.textContent = `Richtig! Der Anfangsbuchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet.`;
+
                     
+
                     updateProgressDisplay(); 
 
+
+
                     if (Object.keys(revealedLetters).length === NUM_DOORS) {
+
                          setTimeout(() => {
+
                              modal.style.display = 'none';
+
                              renderCalendar(); 
+
                          }, 1000);
+
                     }
+
                 }
+
                 setTimeout(() => { modal.style.display = 'none'; renderCalendar(); }, 2000); 
 
+
+
             } else {
+
                 feedbackMsg.textContent = 'Falsche Antwort. Versuch es nochmal!';
+
                 feedbackMsg.style.color = '#c0392b';
+
                 feedbackMsg.style.display = 'block';
+
                 successMsg.style.display = 'none';
+
             }
+
         }
+
         
+
         // --- 7. EVENT-LISTENER ---
+
         
+
         closeBtn.onclick = function() {
+
             modal.style.display = "none";
+
         }
+
+
 
         window.onclick = function(event) {
+
             if (event.target === modal) {
+
                 modal.style.display = "none";
+
             }
+
         }
+
         
+
         submitBtn.onclick = checkAnswer;
+
         
+
         answerInput.addEventListener('keypress', function (e) {
+
             if (e.key === 'Enter') {
+
                 checkAnswer();
+
             }
+
         });
 
+
+
         document.addEventListener('DOMContentLoaded', renderCalendar);
+
     </script>
+
 </body>
+
 </html>
