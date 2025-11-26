@@ -24,12 +24,18 @@
             margin-bottom: 30px;
             text-align: center;
             
-            /* NEU: Skaliert die Größe proportional zur Bildschirmbreite */
-            font-size: 6vw; 
+            /* NEU: Erzeugt 20px Puffer links und rechts */
+            margin: 0 20px 30px 20px; 
             
-            white-space: nowrap; /* Verhindert Zeilenumbruch */
-            padding: 0 5px; /* Kleiner Puffer an den Seiten */
-            box-sizing: border-box;
+            font-size: 6vw; 
+            white-space: nowrap; 
+            
+            /* ALT ENTFERNT: padding: 0 5px; box-sizing: border-box; */
+            
+            /* Setzt die Breite und Zentrierung über Flexbox */
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         #calendar {
@@ -45,7 +51,6 @@
                 grid-template-columns: repeat(4, 1fr);
                 gap: 10px;
             }
-            /* OPTIONAL: Auf kleinsten Bildschirmen die Schriftgröße etwas kleiner stellen, um sicherzugehen */
             h1 {
                 font-size: 7vw; 
             }
