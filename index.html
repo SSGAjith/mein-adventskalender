@@ -19,47 +19,17 @@
             overflow-x: hidden; 
         }
 
-        /* Überschrift-Layout: Verhindert Umbruch und Überlauf */
         h1 {
             color: #c0392b;
             margin-bottom: 30px;
             text-align: center;
-            padding: 0 5px; 
-            box-sizing: border-box;
-            width: 100%;
             
-            /* Flexbox-Container für Stern- und Text-Steuerung */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap; 
-            overflow: hidden; 
-        }
-        
-        h1 .title-text {
-            /* Skaliert die Größe proportional zur Bildschirmbreite */
+            /* NEU: Skaliert die Größe proportional zur Bildschirmbreite */
             font-size: 6vw; 
-            flex-shrink: 1; 
-            min-width: 0; 
-            margin: 0 5px;
-        }
-
-        h1 .star {
-            font-size: 2em; 
-            flex-shrink: 0; 
-        }
-        
-        @media (max-width: 600px) {
-            h1 .title-text {
-                font-size: 7vw;
-            }
-            h1 .star {
-                font-size: 1.8em;
-            }
-            #calendar {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 10px;
-            }
+            
+            white-space: nowrap; /* Verhindert Zeilenumbruch */
+            padding: 0 5px; /* Kleiner Puffer an den Seiten */
+            box-sizing: border-box;
         }
 
         #calendar {
@@ -67,12 +37,21 @@
             grid-template-columns: repeat(6, 1fr);
             gap: 15px;
             max-width: 1000px;
-            /* NEU: Nimmt nur 90% der Breite ein und zentriert sich */
-            width: 90%; 
-            margin: 0 auto;
+            width: 100%;
         }
 
-        /* --- 2. Tür-Stile --- */
+        @media (max-width: 600px) {
+            #calendar {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            /* OPTIONAL: Auf kleinsten Bildschirmen die Schriftgröße etwas kleiner stellen, um sicherzugehen */
+            h1 {
+                font-size: 7vw; 
+            }
+        }
+
+        /* --- 2. Tür-Stile (Unverändert) --- */
         .door {
             background-color: #27ae60;
             border: 4px solid #c0392b;
@@ -141,16 +120,6 @@
             font-size: 16px; 
         }
 
-        .riddle-button {
-            background-color: #c0392b;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        
         /* --- 4. Fortschrittsanzeige --- */
         #progress-display-container {
             margin-top: 30px;
@@ -198,11 +167,7 @@
 </head>
 <body>
 
-    <h1>
-        <span class="star">✨</span>
-        <span class="title-text">Adventskalender für Luisa</span>
-        <span class="star">✨</span>
-    </h1> 
+    <h1>✨ Adventskalender für Luisa ✨</h1> 
 
     <div id="calendar">
     </div>
