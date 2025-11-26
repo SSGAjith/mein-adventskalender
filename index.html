@@ -21,14 +21,21 @@
 
         h1 {
             color: #c0392b;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             text-align: center;
             
-            font-size: 6vw; 
+            /* NEU: Erzeugt 20px Puffer links und rechts */
+            margin: 0 20px 20px 20px; 
             
-            white-space: nowrap; /* Verhindert Zeilenumbruch */
-            padding: 0 5px; /* Kleiner Puffer an den Seiten */
-            box-sizing: border-box;
+            font-size: 6vw; 
+            white-space: nowrap; 
+            
+            /* ALT ENTFERNT: padding: 0 5px; box-sizing: border-box; */
+            
+            /* Setzt die Breite und Zentrierung über Flexbox */
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         #calendar {
@@ -44,7 +51,6 @@
                 grid-template-columns: repeat(4, 1fr);
                 gap: 10px;
             }
-            /* OPTIONAL: Auf kleinsten Bildschirmen die Schriftgröße etwas kleiner stellen, um sicherzugehen */
             h1 {
                 font-size: 7vw; 
             }
@@ -117,19 +123,8 @@
             border-radius: 5px;
             text-align: center;
             font-size: 16px; 
-            -webkit-text-size-adjust: 100%; 
         }
 
-        .riddle-button {
-            background-color: #c0392b;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        
         /* --- 4. Fortschrittsanzeige --- */
         #progress-display-container {
             margin-top: 30px;
@@ -306,8 +301,8 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             const today = new Date(); 
-            const currentMonth = today.getMonth() + 1;
-            const currentDay = today.getDate();
+            const currentMonth = 12;
+            const currentDay = 7;
             
             if (currentMonth !== 12) {
                 return false;
