@@ -15,7 +15,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden; 
         }
 
         /* Überschrift-Layout: Verhindert Umbruch und Überlauf */
@@ -27,23 +26,25 @@
             box-sizing: border-box;
             width: 100%;
             
+            /* Flexbox-Container für Stern- und Text-Steuerung */
             display: flex;
             align-items: center;
             justify-content: center;
-            white-space: nowrap; 
-            overflow: hidden; 
+            white-space: nowrap; /* Verhindert Umbruch */
+            overflow: hidden; /* Verhindert Überlauf */
         }
         
         h1 .title-text {
+            /* Skaliert die Größe proportional zur Bildschirmbreite */
             font-size: 6vw; 
-            flex-shrink: 1; 
+            flex-shrink: 1; /* Der Text schrumpft, wenn der Platz eng wird */
             min-width: 0; 
             margin: 0 5px;
         }
 
         h1 .star {
             font-size: 2em; 
-            flex-shrink: 0; 
+            flex-shrink: 0; /* Die Sterne schrumpfen nicht */
         }
         
         @media (max-width: 600px) {
