@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"> 
     <title>Adventskalender für Luisa</title>
     <style>
-        /* --- 1. Layout & Responsive Design (Unverändert) --- */
+        /* --- 1. Layout & Responsive Design --- */
         body {
             font-family: sans-serif;
             background-color: #f4f4f9;
@@ -101,7 +101,7 @@
 
         .modal-content {
             background-color: #fff;
-            margin: 5% auto;
+            margin: 15% auto;
             padding: 30px;
             width: 90%;
             max-width: 500px;
@@ -120,30 +120,6 @@
             border-radius: 5px;
             border: 2px solid #c0392b;
         }
-
-        /* MC-Optionen Styling NEU */
-        #mc-options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .mc-option-button {
-            background-color: #3498db;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.2s;
-        }
-
-        .mc-option-button:hover {
-            background-color: #2980b9;
-        }
-        /* ENDE MC STYLING */
 
         .riddle-input {
             padding: 10px;
@@ -236,9 +212,6 @@
                     <img id="riddle-image" src="" alt="Rätselbild">
                 </div>
                 
-                <div id="mc-options-container" style="display: none;">
-                    </div>
-                
                 <input type="text" id="riddle-answer" class="riddle-input" placeholder="Deine Antwort eingeben...">
             </div>
             
@@ -255,28 +228,25 @@
         const NUM_DOORS = 24;
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
-        // RÄTSELPOOL: Die Antwort (answer) muss mit dem Buchstaben beginnen, der in der Zielnachricht benötigt wird.
-        // Für MC-Rätsel ist die "answer" das Schlüsselwort (z.B. antworta, korrekt) das der Benutzer eingeben muss.
-        // WICHTIG: Die Options-Texte müssen die Antwort nicht enthalten, der Nutzer muss das Schlüsselwort aus der Frage ableiten.
         const allRiddles = [
             // 1. L: TEXT
             { category: "TEXT", question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
             // 2. A: MATH_MC
-            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? Wähle die Option B. Gib 'antworta' ein.", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "antworta" },
+            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? Wähle die Option B. Gib 'antworta' ein.", answer: "antworta" },
             // 3. S: LOGIC_MC
-            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] Wähle die Option C. Gib 'symbolc' ein.", options: ["A", "B", "C"], correctAnswer: "C", targetWord: "symbolc" },
-            // 4. S: IMAGE
-            { category: "IMAGE", question: "Errate das Gericht auf dem Bild (Muss mit S beginnen):", imageSrc: "ChatGPT Image 27. Nov. 2025, 11_11_07.jpg", answer: "spinatlasagne" },
+            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc" },
+            // 4. S: IMAGE - Lasagne (Dateiendung auf .png geändert)
+            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.png", answer: "spinatlasagne" },
             // 5. U: COUNTRY
             { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Ungarn) - Gib das Land ein.", answer: "ungarn" },
             // 6. N: TEXT
             { category: "TEXT", question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
             // 7. S: MATH_MC
-            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Wähle Option B. Gib 'stimmt' ein.", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "stimmt" },
+            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Wähle Option B. Gib 'summe' ein.", answer: "summe" },
             // 8. K: LOGIC_MC
-            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ... Wähle Option B (32). Gib 'korrekt' ein.", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "korrekt" },
-            // 9. A: IMAGE
-            { category: "IMAGE", question: "Erkenne den Ort/Gegenstand auf dem Bild:", imageSrc: "Apfel.jpg", answer: "apfel" },
+            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ... Wähle Option B (32). Gib 'korrekt' ein.", answer: "korrekt" },
+            // 9. A: IMAGE - Apfel (Dateiendung auf .png geändert)
+            { category: "IMAGE", question: "Erkenne den Ort/Gegenstand auf dem Bild:", imageSrc: "Apfel.png", answer: "apfel" },
             // 10. K: COUNTRY
             { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? (Flagge von Deutschland) - Gib das Land ein.", answer: "kroatien" },
             // 11. A: TEXT
@@ -284,27 +254,27 @@
             // 12. O: TEXT
             { category: "TEXT", question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
             // 13. T: LOGIC_MC
-            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Wähle Option A. Gib 'tatsache' ein.", options: ["A", "B", "C"], correctAnswer: "A", targetWord: "tatsache" },
+            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Wähle Option A. Gib 'tatsache' ein.", answer: "tatsache" },
             // 14. R: SEARCH
             { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
-            // 15. I: IMAGE
-            { category: "IMAGE", question: "Welches Tier ist das (Muss mit I beginnen)?", imageSrc: "ChatGPT Image 27. Nov. 2025, 11_14_49.jpg", answer: "iglu" },
+            // 15. I: IMAGE - Pinguine (Dateiendung auf .png geändert)
+            { category: "IMAGE", question: "Welches Tier ist das (Muss mit I beginnen)?", imageSrc: "Pinguin.png", answer: "igel" },
             // 16. N: MATH_MC
-            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'numerisch' ein.", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "numerisch" },
+            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'numerisch' ein.", answer: "numerisch" },
             // 17. K: TEXT
             { category: "TEXT", question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
             // 18. E: COUNTRY
             { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Italien) - Gib das Land ein.", answer: "england" },
             // 19. N: SEARCH
             { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
-            // 20. G: IMAGE
-            { category: "IMAGE", question: "Was ist das (Muss mit G beginnen)?", imageSrc: "ChatGPT Image 27. Nov. 2025, 11_14_39.jpg", answer: "gesicht" },
+            // 20. G: IMAGE - Eichhörnchen (Dateiendung auf .png geändert)
+            { category: "IMAGE", question: "Was ist das (Muss mit G beginnen)?", imageSrc: "Eichhörnchen.png", answer: "gold" },
             // 21. E: LOGIC_MC
-            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", options: ["A", "B", "C"], correctAnswer: "A", targetWord: "eine" },
+            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", answer: "eine" },
             // 22. H: TEXT
             { category: "TEXT", question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
             // 23. E: MATH_MC
-            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'ergebnis' ein.", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "ergebnis" },
+            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis" },
             // 24. N: TEXT
             { category: "TEXT", question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
         ];
@@ -316,7 +286,7 @@
             }
         }
         
-        // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG (Unverändert) ---
+        // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG ---
         function createConstrainedAssignments() {
             const riddleGroups = {};
             allRiddles.forEach((riddle, index) => {
@@ -381,8 +351,8 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             const today = new Date(); 
-            const currentMonth = 12;
-            const currentDay = 25;
+            const currentMonth = today.getMonth() + 1;
+            const currentDay = today.getDate();
             
             if (currentMonth !== 12) {
                 return false;
@@ -390,7 +360,7 @@
             return day <= currentDay;
         }
 
-        // --- 3. RENDERN KALENDER (ANGEPASST) ---
+        // --- 3. RENDERN KALENDER (MODIFIZIERT) ---
         function renderCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
@@ -489,7 +459,7 @@
         window.resetCalendar = resetCalendar;
 
 
-        // --- 6. MODAL/SPIEL-LOGIK (WICHTIG: KEINE MC BUTTONS MEHR) ---
+        // --- 6. MODAL/SPIEL-LOGIK ---
         
         const modal = document.getElementById('riddleModal');
         const closeBtn = document.querySelector('.close-button');
@@ -636,4 +606,3 @@
     </script>
 </body>
 </html>
-
