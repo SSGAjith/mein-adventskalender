@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"> 
     <title>Adventskalender für Luisa</title>
     <style>
         /* --- 1. Layout & Responsive Design --- */
@@ -15,7 +15,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* WICHTIG: Verhindert horizontales Scrollen */
             overflow-x: hidden; 
         }
 
@@ -305,20 +304,16 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             const today = new Date(); 
-            // Zum Testen kannst du die nächste Zeile aktivieren, um ein festes Datum zu simulieren
-            // const today = new Date('2025-12-15T00:00:00'); 
-
-            const currentMonth = today.getMonth() + 1;
-            const currentDay = today.getDate();
+            const currentMonth = 12;
+            const currentDay = 6;
             
             if (currentMonth !== 12) {
                 return false;
             }
-            // Prüft, ob die übergebene Zahl (z.B. 5) kleiner oder gleich dem heutigen Tag (z.B. 2) ist.
             return day <= currentDay;
         }
 
-        // --- 3. RENDERN KALENDER (ANGEPASST) ---
+        // --- 3. RENDERN KALENDER (MODIFIZIERT) ---
         function renderCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
@@ -333,7 +328,7 @@
 
             for (let i = 1; i <= NUM_DOORS; i++) {
                 const displayedNumber = fixedDoorOrder[i - 1]; 
-                const currentDoorPosition = i; // Chronologische Position (1. Tür im Layout, 2. Tür...)
+                const currentDoorPosition = i; 
 
                 const doorEl = document.createElement('div');
                 doorEl.classList.add('door');
@@ -356,13 +351,10 @@
                     doorEl.classList.add('opened');
                 }
                 
-                // HIER IST DIE LOGIK-ÄNDERUNG: Prüfung basiert auf displayedNumber!
                 if (!canOpenDoor(displayedNumber) && !isOpened) {
                     doorEl.classList.add('locked');
-                    // Angepasste Meldung, die auf die angezeigte Zahl verweist
                     doorEl.onclick = () => alert(`Tür ${displayedNumber} kannst du erst ab dem ${displayedNumber}. Dezember öffnen!`);
                 } else {
-                    // openDoor verwendet weiterhin die chronologische Position für das Rätsel-Mapping
                     doorEl.onclick = () => openDoor(currentDoorPosition);
                 }
 
