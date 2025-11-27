@@ -22,7 +22,9 @@
             color: #c0392b;
             margin-bottom: 30px;
             text-align: center;
+            
             font-size: 6vw; 
+            
             white-space: nowrap; 
             padding: 0 5px; 
             box-sizing: border-box;
@@ -99,7 +101,7 @@
 
         .modal-content {
             background-color: #fff;
-            margin: 5% auto;
+            margin: 15% auto;
             padding: 30px;
             width: 90%;
             max-width: 500px;
@@ -226,55 +228,54 @@
         const NUM_DOORS = 24;
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
-        // RÄTSELPOOL: Die Antwort muss mit dem Buchstaben beginnen, der in TARGET_LETTERS benötigt wird.
-        // Für MC/Logik-Rätsel muss der Benutzer das Stichwort (z.B. ANTWORTB) eingeben.
+        // Die Antwort (answer) muss mit dem Buchstaben beginnen, der in der Zielnachricht benötigt wird.
         const allRiddles = [
             // 1. L: TEXT
             { category: "TEXT", question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
-            // 2. A: MATH_MC
-            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? (A) Null, (B) Eins, (C) Zwei - Gib das Wort ein, das mit 'A' beginnt und die richtige Option (B) beschreibt.", answer: "antwortb" },
-            // 3. S: LOGIC_MC
-            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort ein, das mit 'S' beginnt und die richtige Option (C) beschreibt.", answer: "sechser" },
-            // 4. S: IMAGE
-            { category: "IMAGE", question: "Errate das Gebäude auf dem Bild (Muss mit S beginnen):", imageSrc: "PFAD_ZUM_EIGENEN_BILD_1.jpg", answer: "schloss" },
+            // 2. A: MATH_MC (Der Antwort muss mit 'A' beginnen)
+            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? (A) 0, (B) 1, (C) 2 - Gib das Wort 'AntwortB' ein.", answer: "antwortb" },
+            // 3. S: LOGIC_MC (Antwort muss mit 'S' beginnen)
+            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'SymbolC' ein.", answer: "symbolc" },
+            // 4. S: IMAGE - Verpixelte Lasagne
+            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "ChatGPT Image 27. Nov. 2025, 11_11_07.jpg", answer: "spinatlasagne" },
             // 5. U: COUNTRY
             { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Ungarn) - Gib das Land ein.", answer: "ungarn" },
             // 6. N: TEXT
             { category: "TEXT", question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
-            // 7. S: MATH_MC
-            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$ - Gib das Wort ein, das mit 'S' beginnt und die richtige Option (B) beschreibt.", answer: "stimmt" },
-            // 8. K: LOGIC_MC
-            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ... (A) 24, (B) 32, (C) 64 - Gib das **K**orrekte Ergebnis als Wort ein.", answer: "korrekt" },
-            // 9. A: TEXT
-            { category: "TEXT", question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" },
+            // 7. S: MATH_MC (Antwort muss mit 'S' beginnen)
+            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$ - Gib das Wort 'Summe' ein.", answer: "summe" },
+            // 8. K: LOGIC_MC (Antwort muss mit 'K' beginnen)
+            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ... (A) 24, (B) 32, (C) 64 - Gib das 'Korrekte' Ergebnis als Wort ein.", answer: "korrekt" },
+            // 9. A: IMAGE - Original Apfel
+            { category: "IMAGE", question: "Erkenne den Ort/Gegenstand auf dem Bild:", imageSrc: "Apfel.jpg", answer: "apfel" },
             // 10. K: COUNTRY
-            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? (Flagge von Deutschland) - Gib das **K**orrekte Land ein.", answer: "kroatien" },
-            // 11. A: IMAGE
-            { category: "IMAGE", question: "Erkenne den Ort/Gegenstand auf dem Bild (Muss mit A beginnen):", imageSrc: "PFAD_ZUM_EIGENEN_BILD_2.jpg", answer: "ampel" },
+            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? (Flagge von Deutschland) - Gib das 'K'orrekte Land ein.", answer: "kroatien" },
+            // 11. A: TEXT
+            { category: "TEXT", question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" },
             // 12. O: TEXT
             { category: "TEXT", question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
             // 13. T: LOGIC_MC
-            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5 - Gib die **T**atsächliche Antwort als Wort ein.", answer: "tatsache" },
+            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5 - Gib die 'T'atsächliche Antwort als Wort ein.", answer: "tatsache" },
             // 14. R: SEARCH
             { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
-            // 15. I: IMAGE
-            { category: "IMAGE", question: "Welches Tier ist das (Muss mit I beginnen)?", imageSrc: "PFAD_ZUM_EIGENEN_BILD_3.jpg", answer: "igel" },
-            // 16. N: MATH_MC
-            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4 - Gib die **N**umerische Lösung als Wort ein.", answer: "numerisch" },
+            // 15. I: IMAGE - Verpixelte Pinguine
+            { category: "IMAGE", question: "Welches Tier ist das (Muss mit I beginnen)?", imageSrc: "ChatGPT Image 27. Nov. 2025, 11_14_49.jpg", answer: "iglu" },
+            // 16. N: MATH_MC (Antwort muss mit 'N' beginnen)
+            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4 - Gib die 'N'umerische Lösung als Wort ein.", answer: "numerisch" },
             // 17. K: TEXT
             { category: "TEXT", question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
             // 18. E: COUNTRY
-            { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Italien) - Gib das **E**uropäische Land als Wort ein.", answer: "england" },
+            { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Italien) - Gib das 'E'uropäische Land als Wort ein.", answer: "england" },
             // 19. N: SEARCH
-            { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.' - Gib die **N**umerische Antwort als Wort ein.", answer: "neun" },
-            // 20. G: IMAGE
-            { category: "IMAGE", question: "Was ist das (Muss mit G beginnen)?", imageSrc: "PFAD_ZUM_EIGENEN_BILD_4.jpg", answer: "gesicht" },
-            // 21. E: LOGIC_MC
-            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? (A) 1 Stunde, (B) 1,5 Stunden, (C) 90 Minuten - Gib das **E**nde der Zeit als Wort ein.", answer: "eine" },
+            { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.' - Gib die 'N'umerische Antwort als Wort ein.", answer: "neun" },
+            // 20. G: IMAGE - Verpixeltes Eichhörnchen
+            { category: "IMAGE", question: "Was ist das (Muss mit G beginnen)?", imageSrc: "ChatGPT Image 27. Nov. 2025, 11_14_39.jpg", answer: "geheimnis" },
+            // 21. E: LOGIC_MC (Antwort muss mit 'E' beginnen)
+            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? (A) 1 Stunde, (B) 1,5 Stunden, (C) 90 Minuten - Gib das 'E'rgebnis als Wort ein.", answer: "eine" },
             // 22. H: TEXT
             { category: "TEXT", question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
-            // 23. E: MATH_MC
-            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$ - Gib das **E**rgebnis als Wort ein (B).", answer: "ergebnis" },
+            // 23. E: MATH_MC (Antwort muss mit 'E' beginnen)
+            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$ - Gib das 'E'rgebnis als Wort ein (B).", answer: "ergebnis" },
             // 24. N: TEXT
             { category: "TEXT", question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
         ];
@@ -286,7 +287,7 @@
             }
         }
         
-        // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG (Unverändert) ---
+        // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG ---
         function createConstrainedAssignments() {
             const riddleGroups = {};
             allRiddles.forEach((riddle, index) => {
@@ -360,12 +361,11 @@
             return day <= currentDay;
         }
 
-        // --- 3. RENDERN KALENDER (ANGEPASST) ---
+        // --- 3. RENDERN KALENDER (MODIFIZIERT) ---
         function renderCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
 
-            // Feste, gemischte Reihenfolge (wird verwendet, um die Zahlen auf den Kästchen anzuzeigen)
             const fixedDoorOrder = [
                 2, 21, 19, 3, 15, 23, 
                 17, 7, 14, 10, 12, 20, 
@@ -411,7 +411,7 @@
             updateProgressDisplay();
         }
         
-        // --- 4. FORTSCHRITTSANZEIGE LOGIK (Unverändert) ---
+        // --- 4. FORTSCHRITTSANZEIGE LOGIK ---
         function updateProgressDisplay() {
             const progressEl = document.getElementById('progress-display');
             const finalMessageEl = document.getElementById('final-message-text');
@@ -460,7 +460,7 @@
         window.resetCalendar = resetCalendar;
 
 
-        // --- 6. MODAL/SPIEL-LOGIK (WICHTIG: KEINE MC BUTTONS MEHR) ---
+        // --- 6. MODAL/SPIEL-LOGIK ---
         
         const modal = document.getElementById('riddleModal');
         const closeBtn = document.querySelector('.close-button');
@@ -489,12 +489,16 @@
             const isOpened = !!revealedLetters[targetPosition]; 
             const currentLetter = isOpened ? revealedLetters[targetPosition] : revealedLetterCandidate;
 
+            if (!riddleData) {
+                return;
+            }
+            
             // Modal vorbereiten und öffnen
             document.getElementById('modal-title').textContent = `Rätsel zu Tür ${currentDoorNumber}`;
             answerInput.value = '';
             feedbackMsg.style.display = 'none';
             successMsg.style.display = 'none';
-            
+
             // 6.1: Wenn Tür bereits geöffnet
             if (isOpened) {
                 document.getElementById('modal-title').textContent = `Tür ${currentDoorNumber} (Löst Position ${targetPosition} mit Buchstabe "${currentLetter}")`;
