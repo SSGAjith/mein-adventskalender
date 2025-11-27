@@ -15,6 +15,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            /* WICHTIG: Verhindert horizontales Scrollen */
             overflow-x: hidden; 
         }
 
@@ -25,7 +26,7 @@
             
             font-size: 6vw; 
             
-            white-space: nowrap;
+            white-space: nowrap; 
             padding: 0 5px; 
             box-sizing: border-box;
         }
@@ -304,8 +305,8 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             const today = new Date(); 
-            const currentMonth = today.getMonth() + 1;
-            const currentDay = today.getDate();
+            const currentMonth = 12;
+            const currentDay = 6;
             
             if (currentMonth !== 12) {
                 return false;
@@ -313,22 +314,37 @@
             return day <= currentDay;
         }
 
-        // --- 3. RENDERN KALENDER ---
+        // --- 3. RENDERN KALENDER (MODIFIZIERT) ---
         function renderCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
 
+            // Feste, gemischte Reihenfolge (Sie könnten dies auch zufällig machen, aber der Wunsch war fest)
+            const fixedDoorOrder = [
+                1, 5, 9, 13, 17, 21, 
+                2, 6, 10, 14, 18, 22, 
+                3, 7, 11, 15, 19, 23, 
+                4, 8, 12, 16, 20, 24
+            ]; // 24 Zahlen
+
             for (let i = 1; i <= NUM_DOORS; i++) {
+                // Die visuelle Zahl, die angezeigt wird, ist jetzt aus der festen Liste
+                const displayedNumber = fixedDoorOrder[i - 1]; 
+                
+                // Die Tür-Logik (Datum, Rätsel, etc.) bleibt an die chronologische Position (i) gebunden
+                const currentDoorPosition = i; 
+
                 const doorEl = document.createElement('div');
                 doorEl.classList.add('door');
-                doorEl.dataset.day = i;
-                
+                doorEl.dataset.day = currentDoorPosition; // Wichtig: Für die Logik
+
                 const numberEl = document.createElement('div');
                 numberEl.classList.add('door-number');
-                numberEl.textContent = i;
+                numberEl.textContent = displayedNumber; // NEU: Zeigt die feste, gemischte Zahl an
                 doorEl.appendChild(numberEl);
 
-                const assignment = assignments[i];
+
+                const assignment = assignments[currentDoorPosition];
                 if (!assignment) {
                     continue;
                 }
@@ -340,11 +356,11 @@
                     doorEl.classList.add('opened');
                 }
                 
-                if (!canOpenDoor(i) && !isOpened) {
+                if (!canOpenDoor(currentDoorPosition) && !isOpened) {
                     doorEl.classList.add('locked');
-                    doorEl.onclick = () => alert(`Du kannst Tür ${i} erst ab dem ${i}. Dezember öffnen!`);
+                    doorEl.onclick = () => alert(`Du kannst Tür ${currentDoorPosition} erst ab dem ${currentDoorPosition}. Dezember öffnen!`);
                 } else {
-                    doorEl.onclick = () => openDoor(i);
+                    doorEl.onclick = () => openDoor(currentDoorPosition);
                 }
 
                 calendarEl.appendChild(doorEl);
@@ -523,6 +539,12 @@
         });
 
         document.addEventListener('DOMContentLoaded', renderCalendar);
+        
+        // --- 8. SCROLL-RESET FUNKTION ---
+        function resetScrollPosition() {
+            window.scrollTo(0, 0);
+        }
+        window.addEventListener('load', resetScrollPosition);
     </script>
 </body>
 </html>
