@@ -305,44 +305,44 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             const today = new Date(); 
-            const currentMonth = 12;
-            const currentDay = 6;
+            // Zum Testen kannst du die nächste Zeile aktivieren, um ein festes Datum zu simulieren
+            // const today = new Date('2025-12-15T00:00:00'); 
+
+            const currentMonth = today.getMonth() + 1;
+            const currentDay = today.getDate();
             
             if (currentMonth !== 12) {
                 return false;
             }
+            // Prüft, ob die übergebene Zahl (z.B. 5) kleiner oder gleich dem heutigen Tag (z.B. 2) ist.
             return day <= currentDay;
         }
 
-        // --- 3. RENDERN KALENDER (MODIFIZIERT) ---
+        // --- 3. RENDERN KALENDER (ANGEPASST) ---
         function renderCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
 
-            // Feste, gemischte Reihenfolge (Sie könnten dies auch zufällig machen, aber der Wunsch war fest)
+            // Feste, gemischte Reihenfolge (wird verwendet, um die Zahlen auf den Kästchen anzuzeigen)
             const fixedDoorOrder = [
                 1, 5, 9, 13, 17, 21, 
                 2, 6, 10, 14, 18, 22, 
                 3, 7, 11, 15, 19, 23, 
                 4, 8, 12, 16, 20, 24
-            ]; // 24 Zahlen
+            ]; 
 
             for (let i = 1; i <= NUM_DOORS; i++) {
-                // Die visuelle Zahl, die angezeigt wird, ist jetzt aus der festen Liste
                 const displayedNumber = fixedDoorOrder[i - 1]; 
-                
-                // Die Tür-Logik (Datum, Rätsel, etc.) bleibt an die chronologische Position (i) gebunden
-                const currentDoorPosition = i; 
+                const currentDoorPosition = i; // Chronologische Position (1. Tür im Layout, 2. Tür...)
 
                 const doorEl = document.createElement('div');
                 doorEl.classList.add('door');
-                doorEl.dataset.day = currentDoorPosition; // Wichtig: Für die Logik
+                doorEl.dataset.day = currentDoorPosition; 
 
                 const numberEl = document.createElement('div');
                 numberEl.classList.add('door-number');
-                numberEl.textContent = displayedNumber; // NEU: Zeigt die feste, gemischte Zahl an
+                numberEl.textContent = displayedNumber; 
                 doorEl.appendChild(numberEl);
-
 
                 const assignment = assignments[currentDoorPosition];
                 if (!assignment) {
@@ -356,10 +356,13 @@
                     doorEl.classList.add('opened');
                 }
                 
-                if (!canOpenDoor(currentDoorPosition) && !isOpened) {
+                // HIER IST DIE LOGIK-ÄNDERUNG: Prüfung basiert auf displayedNumber!
+                if (!canOpenDoor(displayedNumber) && !isOpened) {
                     doorEl.classList.add('locked');
-                    doorEl.onclick = () => alert(`Du kannst Tür ${currentDoorPosition} erst ab dem ${currentDoorPosition}. Dezember öffnen!`);
+                    // Angepasste Meldung, die auf die angezeigte Zahl verweist
+                    doorEl.onclick = () => alert(`Tür ${displayedNumber} kannst du erst ab dem ${displayedNumber}. Dezember öffnen!`);
                 } else {
+                    // openDoor verwendet weiterhin die chronologische Position für das Rätsel-Mapping
                     doorEl.onclick = () => openDoor(currentDoorPosition);
                 }
 
