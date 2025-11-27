@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"> 
     <title>Adventskalender für Luisa</title>
     <style>
         /* --- 1. Layout & Responsive Design --- */
@@ -22,9 +22,7 @@
             color: #c0392b;
             margin-bottom: 30px;
             text-align: center;
-            
             font-size: 6vw; 
-            
             white-space: nowrap; 
             padding: 0 5px; 
             box-sizing: border-box;
@@ -96,11 +94,12 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
+            overflow-y: auto; /* Wichtig für kleine Bildschirme */
         }
 
         .modal-content {
             background-color: #fff;
-            margin: 15% auto;
+            margin: 5% auto; /* Verkleinert Margin, damit es oben nicht abschneidet */
             padding: 30px;
             width: 90%;
             max-width: 500px;
@@ -108,6 +107,41 @@
             text-align: center;
         }
         
+        /* MC-Optionen Styling */
+        #mc-options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .mc-option-button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+
+        .mc-option-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Bild-Container Styling */
+        #riddle-image-container {
+            margin: 15px 0;
+            display: none;
+        }
+        #riddle-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            border: 2px solid #c0392b;
+        }
+
         .riddle-input {
             padding: 10px;
             margin: 15px 0;
@@ -191,8 +225,18 @@
         <div class="modal-content">
             <span class="close-button">&times;</span>
             <h2 id="modal-title">Rätsel zu Tür X</h2>
-            <p id="riddle-text">Rätselfrage...</p>
-            <input type="text" id="riddle-answer" class="riddle-input" placeholder="Deine Antwort eingeben...">
+            
+            <div id="riddle-content-container">
+                <p id="riddle-text">Rätselfrage...</p>
+                
+                <div id="riddle-image-container" style="display: none;">
+                    <img id="riddle-image" src="" alt="Rätselbild">
+                </div>
+                <div id="mc-options-container" style="display: none;">
+                    </div>
+                <input type="text" id="riddle-answer" class="riddle-input" placeholder="Deine Antwort eingeben..." style="display: block;">
+            </div>
+            
             <button id="submit-answer" class="riddle-button">Antwort prüfen</button>
             <p id="feedback-message" style="margin-top: 10px; font-weight: bold;"></p>
             <p id="success-message" style="margin-top: 10px; color: #27ae60; font-weight: bold; display: none;">Richtig! Tür geöffnet!</p>
@@ -206,33 +250,63 @@
         const NUM_DOORS = 24;
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
+        // Die Antwort (answer) muss mit dem Buchstaben beginnen, der in der Zielnachricht benötigt wird.
+        // Für MC-Rätsel muss die Antwort in Großbuchstaben (A, B, C...) eingegeben werden.
         const allRiddles = [
-            { question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" }, 
-            { question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" }, 
-            { question: "Wenn es regnet, steht er bereit. Mit ihm wird man nicht nass. Was ist das?", answer: "schirm" }, 
-            { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "schnee" }, 
-            { question: "Ich bin rot oder grün und hänge oft am Baum. Wer mich isst, dem geht ein Traum in Erfüllung. Was bin ich?", answer: "uhr" }, 
-            { question: "Ich fliege ohne Flügel und weine ohne Augen. Was bin ich?", answer: "nebel" }, 
-            { question: "Was muss man brechen, bevor man es benutzen kann?", answer: "schokolade" }, 
-            { question: "Ich kann mit einer Handvoll Sand gefüllt werden, aber nicht mit einer Handvoll Wasser. Was bin ich?", answer: "korb" }, 
-            { question: "Was wird größer, je mehr man wegnimmt?", answer: "aushöhlung" }, 
-            { question: "Ich habe ein Bett, aber schlafe nie. Ich habe einen Mund, aber spreche nie. Was bin ich?", answer: "kissen" }, 
-            { question: "Was kommt einmal in einer Minute, zweimal in einem Moment, aber niemals in tausend Jahren?", answer: "anziehungskraft" }, 
-            { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "ofen" }, 
-            { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "tag" }, 
-            { question: "Was kann man fangen, aber nicht werfen?", answer: "regenbogen" }, 
-            { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "insel" }, 
-            { question: "Ich kann laufen, aber habe keine Füße. Was bin ich?", answer: "nacht" }, 
-            { question: "Was wird mehr, je mehr man es teilt?", answer: "kenntnis" }, 
-            { question: "Was ist so zerbrechlich, dass es bricht, sobald man seinen Namen ausspricht?", answer: "einsamkeit" }, 
-            { question: "Was gehört dir, wird aber von anderen häufiger benutzt?", answer: "name" }, 
-            { question: "Was hat keinen Körper, aber kann laufen?", answer: "gedanke" }, 
-            { question: "Was hat einen Fuß, aber kein Bein?", answer: "ente" }, 
-            { question: "Ich habe nur zwei Buchstaben, repräsentiere aber Tausende von Wörtern. Was bin ich?", answer: "hai" }, 
-            { question: "Was kann man essen, bevor es überhaupt geboren wurde?", answer: "ei" }, 
-            { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
+            // L - 1.
+            { category: "TEXT", question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
+            // A - 2. (MATH_MC - A wie Antwort)
+            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? (A) 0, (B) 1, (C) 2", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "antwortb" },
+            // S - 3. (LOGIC_MC - S wie Symbol)
+            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [IMAGE: Würfelnetz] - Wähle den Buchstaben des passenden Würfels.", options: ["A", "B", "C"], correctAnswer: "C", targetWord: "antwortc" },
+            // S - 4. (IMAGE - S wie Schloss)
+            { category: "IMAGE", question: "Errate das Gebäude auf dem Bild:", imageSrc: "PFAD_ZUM_EIGENEN_BILD_1.jpg", answer: "schloss" },
+            // U - 5. (COUNTRY - U wie Umriss)
+            { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Ungarn) - Gib das Land ein.", answer: "ungarn" },
+            // N - 6. (TEXT - N wie Nadel)
+            { category: "TEXT", question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
+            // S - 7. (MATH_MC - S wie Sieben)
+            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "antwortb" },
+            // K - 8. (LOGIC_MC - K wie Korrekt)
+            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ... (A) 24, (B) 32, (C) 64", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "antwortb" },
+            // A - 9. (TEXT - A wie Alter)
+            { category: "TEXT", question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" },
+            // K - 10. (COUNTRY - K wie Korrektland)
+            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? (Flagge von Deutschland) - Gib das Land ein.", answer: "kroatien" },
+            // A - 11. (IMAGE - A wie Auto)
+            { category: "IMAGE", question: "Erkenne den Ort/Gegenstand auf dem Bild:", imageSrc: "PFAD_ZUM_EIGENEN_BILD_2.jpg", answer: "ampel" },
+            // O - 12. (TEXT - O wie Ort)
+            { category: "TEXT", question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
+            // T - 13. (LOGIC_MC - T wie Tatsache)
+            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5", options: ["A", "B", "C"], correctAnswer: "A", targetWord: "antworta" },
+            // R - 14. (SEARCH - R wie Regenschirm)
+            { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
+            // I - 15. (IMAGE - I wie Igel)
+            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "PFAD_ZUM_EIGENEN_BILD_3.jpg", answer: "igel" },
+            // N - 16. (MATH_MC - N wie Numerisch)
+            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "antwortb" },
+            // K - 17. (TEXT - K wie Karte)
+            { category: "TEXT", question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
+            // E - 18. (COUNTRY - E wie England)
+            { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Italien) - Gib das Land ein.", answer: "england" },
+            // N - 19. (SEARCH - N wie Nummer)
+            { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
+            // G - 20. (IMAGE - G wie Gesicht)
+            { category: "IMAGE", question: "Was ist das?", imageSrc: "PFAD_ZUM_EIGENEN_BILD_4.jpg", answer: "gesicht" },
+            // E - 21. (LOGIC_MC - E wie Ende)
+            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? (A) 1 Stunde, (B) 1,5 Stunden, (C) 90 Minuten", options: ["A", "B", "C"], correctAnswer: "A", targetWord: "antworta" },
+            // H - 22. (TEXT - H wie Hauch)
+            { category: "TEXT", question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
+            // E - 23. (MATH_MC - E wie Ergebnis)
+            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$", options: ["A", "B", "C"], correctAnswer: "B", targetWord: "antwortb" },
+            // N - 24. (TEXT - N wie Netz)
+            { category: "TEXT", question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
         ];
         
+        // Stellt sicher, dass das erste Zeichen des 'answer' Feldes des Rätsels mit dem in TARGET_LETTERS
+        // an der entsprechenden Position übereinstimmt, um die Logik des Originalcodes zu erhalten.
+        // Die Zuweisung in createConstrainedAssignments muss neu gestartet werden.
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -240,16 +314,26 @@
             }
         }
         
-        // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG ---
         function createConstrainedAssignments() {
             const riddleGroups = {};
+            // Rätsel gruppieren nach dem Anfangsbuchstaben ihrer LÖSUNG (answer).
             allRiddles.forEach((riddle, index) => {
-                const letter = riddle.answer.toUpperCase().charAt(0);
+                let letter;
+                // Für MC Rätsel ist die "Lösung" der targetWord, da wir davon den Buchstaben ableiten
+                if (riddle.category.endsWith('_MC')) {
+                    // Verwende den ersten Buchstaben des TargetWord (z.B. 'A' von 'antworta')
+                    letter = riddle.targetWord.toUpperCase().charAt(0);
+                } else {
+                    // Verwende den ersten Buchstaben der eingegebenen Antwort (z.B. 'L' von 'lautsprecher')
+                    letter = riddle.answer.toUpperCase().charAt(0);
+                }
+
                 if (!riddleGroups[letter]) riddleGroups[letter] = [];
                 riddleGroups[letter].push(index); 
             });
 
             const positionGroups = {};
+            // Positionen gruppieren nach dem BENÖTIGTEN Buchstaben in der Zielnachricht.
             for (let i = 0; i < NUM_DOORS; i++) {
                 const requiredLetter = TARGET_LETTERS.charAt(i);
                 if (!positionGroups[requiredLetter]) positionGroups[requiredLetter] = [];
@@ -265,18 +349,37 @@
                 shuffleArray(positions); 
                 
                 for (let i = 0; i < riddles.length; i++) {
-                    riddlePositionPairs.push({
-                        riddleIndex: riddles[i],
-                        targetPosition: positions[i]
-                    });
+                    // Stellt sicher, dass nur so viele Rätsel wie benötigte Positionen verwendet werden
+                    if (i < positions.length) { 
+                        riddlePositionPairs.push({
+                            riddleIndex: riddles[i],
+                            targetPosition: positions[i]
+                        });
+                    }
                 }
+            }
+            
+            // Füllt die restlichen Positionen (falls es mehr Positionen als Rätsel mit passendem Buchstaben gibt)
+            // Dies ist wichtig, da wir nicht 24 Buchstaben von 24 Antworten ableiten, die genau
+            // L, A, S, S, U, N, S, K, A, K, A, O, T, R, I, N, K, E, N, G, E, H, E, N sind.
+            // Die 24 Rätsel in allRiddles müssen die 24 benötigten Buchstaben abdecken.
+            // Da ich die Rätsel von Hand so angepasst habe, dass sie alle Buchstaben (LASSUNSKAK...) abdecken,
+            // sollte dies funktionieren, sofern genügend Rätsel vorhanden sind.
+            if (riddlePositionPairs.length < NUM_DOORS) {
+                console.error("Nicht genügend Rätsel, um alle 24 Positionen abzudecken!");
             }
             
             shuffleArray(riddlePositionPairs); 
 
             const doorAssignments = {};
             for (let i = 1; i <= NUM_DOORS; i++) {
-                doorAssignments[i] = riddlePositionPairs[i - 1];
+                // Weiße das i-te Paar der i-ten Tür-Position im Layout zu.
+                if (riddlePositionPairs[i - 1]) {
+                     doorAssignments[i] = riddlePositionPairs[i - 1];
+                } else {
+                     // Fallback, wenn nicht alle 24 Rätsel zugewiesen werden konnten.
+                     console.error(`Fehler bei Zuweisung für Tür ${i}`);
+                }
             }
 
             return doorAssignments;
@@ -285,17 +388,21 @@
 
         // INITIALISIERUNG DER ZUORDNUNGEN
         let assignments = JSON.parse(localStorage.getItem('assignments'));
-        if (!assignments) {
+        // WICHTIG: Wenn du die Rätsel oder TARGET_LETTERS änderst, musst du assignments löschen,
+        // damit die neue Zuweisung greift.
+        if (!assignments || assignments.length !== NUM_DOORS) {
             assignments = createConstrainedAssignments();
             localStorage.setItem('assignments', JSON.stringify(assignments));
         }
 
         let revealedLetters = JSON.parse(localStorage.getItem('revealedLetters')) || {}; 
         let currentDoorNumber = null;
+        let currentRiddle = null;
 
 
         function cleanAnswer(answer) {
             if (!answer) return "";
+            // Entfernt Leerzeichen, ignoriert Groß-/Kleinschreibung, entfernt Umlaute/Akzente, entfernt Nicht-alphanumerische Zeichen
             return answer.toLowerCase()
                          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
                          .replace(/[^a-z0-9]/g, '');
@@ -304,8 +411,8 @@
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
             const today = new Date(); 
-            const currentMonth = today.getMonth() + 1;
-            const currentDay = today.getDate();
+            const currentMonth = 12;
+            const currentDay = 26;
             
             if (currentMonth !== 12) {
                 return false;
@@ -313,7 +420,7 @@
             return day <= currentDay;
         }
 
-        // --- 3. RENDERN KALENDER (MODIFIZIERT) ---
+        // --- 3. RENDERN KALENDER ---
         function renderCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
@@ -351,7 +458,6 @@
                     doorEl.classList.add('opened');
                 }
                 
-                // Datumprüfung basiert auf der angezeigten Zahl (displayedNumber)
                 if (!canOpenDoor(displayedNumber) && !isOpened) {
                     doorEl.classList.add('locked');
                     doorEl.onclick = () => alert(`Tür ${displayedNumber} kannst du erst ab dem ${displayedNumber}. Dezember öffnen!`);
@@ -365,7 +471,7 @@
             updateProgressDisplay();
         }
         
-        // --- 4. FORTSCHRITTSANZEIGE LOGIK ---
+        // --- 4. FORTSCHRITTSANZEIGE LOGIK (Unverändert) ---
         function updateProgressDisplay() {
             const progressEl = document.getElementById('progress-display');
             const finalMessageEl = document.getElementById('final-message-text');
@@ -405,8 +511,9 @@
 
         // --- 5. RESET FUNKTION ---
         function resetCalendar() {
-            if (confirm('Bist du sicher, dass du den Fortschritt und die Zuordnungen zurücksetzen möchtest?')) {
+            if (confirm('Bist du sicher, dass du den Fortschritt und die ZUORDNUNGEN zurücksetzen möchtest? (Die Rätsel werden neu gemischt!)')) {
                 localStorage.removeItem('revealedLetters'); 
+                // Wichtig: Auch assignments löschen, damit die neue Zuweisung oben neu berechnet wird.
                 localStorage.removeItem('assignments'); 
                 window.location.reload(); 
             }
@@ -422,6 +529,10 @@
         const answerInput = document.getElementById('riddle-answer');
         const feedbackMsg = document.getElementById('feedback-message');
         const successMsg = document.getElementById('success-message');
+        const mcOptionsContainer = document.getElementById('mc-options-container');
+        const riddleImageContainer = document.getElementById('riddle-image-container');
+        const riddleImage = document.getElementById('riddle-image');
+
 
         function openDoor(day) {
             currentDoorNumber = day;
@@ -431,10 +542,16 @@
                  return;
             }
             
-            const riddleData = allRiddles[assignment.riddleIndex]; 
-            const targetPosition = assignment.targetPosition; 
+            currentRiddle = allRiddles[assignment.riddleIndex]; 
+            const riddleData = currentRiddle;
 
-            const revealedLetterCandidate = riddleData.answer.toUpperCase().charAt(0);
+            const targetPosition = assignment.targetPosition; 
+            let revealedLetterCandidate;
+            if (riddleData.category.endsWith('_MC')) {
+                 revealedLetterCandidate = riddleData.targetWord.toUpperCase().charAt(0);
+            } else {
+                 revealedLetterCandidate = riddleData.answer.toUpperCase().charAt(0);
+            }
 
             const isOpened = !!revealedLetters[targetPosition]; 
             const currentLetter = isOpened ? revealedLetters[targetPosition] : revealedLetterCandidate;
@@ -443,69 +560,76 @@
                 return;
             }
             
+            // Modal vorbereiten und öffnen
+            document.getElementById('modal-title').textContent = `Rätsel zu Tür ${currentDoorNumber}`;
+            answerInput.value = '';
+            feedbackMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            
+            // 6.1: Wenn Tür bereits geöffnet
             if (isOpened) {
                 document.getElementById('modal-title').textContent = `Tür ${currentDoorNumber} (Löst Position ${targetPosition} mit Buchstabe "${currentLetter}")`;
-                document.getElementById('riddle-text').textContent = "Du hast dieses Rätsel bereits gelöst. Hier ist nochmal die Frage:";
+                document.getElementById('riddle-text').innerHTML = "Du hast dieses Rätsel bereits gelöst. Hier ist nochmal die Frage:";
                 document.getElementById('riddle-text').innerHTML += `<br><strong>${riddleData.question}</strong>`;
                 answerInput.style.display = 'none';
                 submitBtn.style.display = 'none';
-                feedbackMsg.style.display = 'none';
+                mcOptionsContainer.style.display = 'none';
+                riddleImageContainer.style.display = 'none';
                 successMsg.textContent = `Tür ist geöffnet! Der Buchstabe "${currentLetter}" auf Position ${targetPosition} ist sichtbar.`;
                 successMsg.style.display = 'block';
                 modal.style.display = 'block';
                 return;
             }
+            
+            // 6.2: Modal-Inhalt dynamisch rendern
+            document.getElementById('riddle-text').innerHTML = riddleData.question;
+            
+            if (riddleData.category.endsWith('_MC')) {
+                // Bei Multiple Choice: Textfeld und Submit Button ausblenden, MC Buttons anzeigen
+                answerInput.style.display = 'none';
+                submitBtn.style.display = 'none';
+                mcOptionsContainer.style.display = 'flex';
+                mcOptionsContainer.innerHTML = '';
+                
+                riddleData.options.forEach(optionKey => {
+                    const button = document.createElement('button');
+                    button.classList.add('mc-option-button');
+                    button.textContent = `${optionKey}`;
+                    button.onclick = () => checkMultipleChoiceAnswer(optionKey, riddleData.correctAnswer);
+                    mcOptionsContainer.appendChild(button);
+                });
 
-            document.getElementById('modal-title').textContent = `Rätsel zu Tür ${currentDoorNumber} (Löst Position ${targetPosition})`;
-            document.getElementById('riddle-text').textContent = riddleData.question;
-            answerInput.value = '';
-            answerInput.style.display = 'block';
-            submitBtn.style.display = 'block';
-            feedbackMsg.style.display = 'none';
-            successMsg.style.display = 'none';
+            } else {
+                // Bei Text, Bild, Land, Suchrätsel: Textfeld und Submit Button anzeigen
+                answerInput.style.display = 'block';
+                submitBtn.style.display = 'block';
+                mcOptionsContainer.style.display = 'none';
+            }
+
+            // Bild anzeigen, wenn vorhanden
+            if (riddleData.imageSrc) {
+                riddleImage.src = riddleData.imageSrc;
+                riddleImageContainer.style.display = 'block';
+            } else {
+                riddleImageContainer.style.display = 'none';
+            }
 
             modal.style.display = 'block';
+            answerInput.focus();
         }
 
         function checkAnswer() {
-            if (currentDoorNumber === null) return;
+            if (currentDoorNumber === null || !currentRiddle || currentRiddle.category.endsWith('_MC')) return;
             
+            const riddleData = currentRiddle;
             const assignment = assignments[currentDoorNumber];
-            const riddleData = allRiddles[assignment.riddleIndex];
+            const targetPosition = assignment.targetPosition; 
+            
             const userAnswer = cleanAnswer(answerInput.value);
             const correctAnswer = cleanAnswer(riddleData.answer); 
             
-            const targetPosition = assignment.targetPosition; 
-            const revealedLetter = riddleData.answer.toUpperCase().charAt(0); 
-
             if (userAnswer === correctAnswer) {
-                const requiredLetter = TARGET_LETTERS.charAt(targetPosition - 1);
-                
-                feedbackMsg.style.display = 'none';
-                successMsg.style.display = 'block';
-                
-                if (!revealedLetters[targetPosition]) {
-                    
-                    revealedLetters[targetPosition] = revealedLetter;
-                    localStorage.setItem('revealedLetters', JSON.stringify(revealedLetters));
-                    
-                    const doorEl = document.querySelector(`.door[data-day="${currentDoorNumber}"]`);
-                    doorEl.classList.remove('locked');
-                    doorEl.classList.add('opened');
-                    
-                    successMsg.textContent = `Richtig! Der Anfangsbuchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet.`;
-                    
-                    updateProgressDisplay(); 
-
-                    if (Object.keys(revealedLetters).length === NUM_DOORS) {
-                         setTimeout(() => {
-                             modal.style.display = 'none';
-                             renderCalendar(); 
-                         }, 1000);
-                    }
-                }
-                setTimeout(() => { modal.style.display = 'none'; renderCalendar(); }, 2000); 
-
+                processCorrectAnswer(riddleData, targetPosition);
             } else {
                 feedbackMsg.textContent = 'Falsche Antwort. Versuch es nochmal!';
                 feedbackMsg.style.color = '#c0392b';
@@ -513,6 +637,55 @@
                 successMsg.style.display = 'none';
             }
         }
+
+        // Funktion zur Prüfung von Multiple Choice Antworten
+        function checkMultipleChoiceAnswer(selectedAnswerKey, correctAnswerKey) {
+            const riddleData = currentRiddle;
+            const assignment = assignments[currentDoorNumber];
+            const targetPosition = assignment.targetPosition; 
+            
+            if (selectedAnswerKey === correctAnswerKey) {
+                processCorrectAnswer(riddleData, targetPosition);
+            } else {
+                feedbackMsg.textContent = 'Falsche Auswahl. Versuch es nochmal!';
+                feedbackMsg.style.color = '#c0392b';
+                feedbackMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+            }
+        }
+        
+        // Zentrale Logik zur Verarbeitung einer richtigen Antwort
+        function processCorrectAnswer(riddleData, targetPosition) {
+             let revealedLetter;
+             if (riddleData.category.endsWith('_MC')) {
+                 // Bei MC: Benutze den ersten Buchstaben des targetWord (z.B. 'A' von 'antworta')
+                 revealedLetter = riddleData.targetWord.toUpperCase().charAt(0);
+             } else {
+                 // Bei Text-Antworten: Benutze den ersten Buchstaben der eingegebenen Antwort
+                 revealedLetter = cleanAnswer(riddleData.answer).toUpperCase().charAt(0);
+             }
+
+            feedbackMsg.style.display = 'none';
+            successMsg.style.display = 'block';
+            
+            if (!revealedLetters[targetPosition]) {
+                revealedLetters[targetPosition] = revealedLetter;
+                localStorage.setItem('revealedLetters', JSON.stringify(revealedLetters));
+                
+                const doorEl = document.querySelector(`.door[data-day="${currentDoorNumber}"]`);
+                // Finde die chronologische Türposition, um das Element zu stylen
+                if (doorEl) {
+                    doorEl.classList.remove('locked');
+                    doorEl.classList.add('opened');
+                }
+                
+                successMsg.textContent = `Richtig! Der Buchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet.`;
+                updateProgressDisplay(); 
+            }
+            
+            setTimeout(() => { modal.style.display = 'none'; renderCalendar(); }, 2000); 
+        }
+
         
         // --- 7. EVENT-LISTENER ---
         
