@@ -229,54 +229,30 @@
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
         const allRiddles = [
-            // 1. L: TEXT
-            { category: "TEXT", question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
-            // 2. A: MATH_MC
-            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? Wähle die Option B. Gib 'antworta' ein.", answer: "antworta" },
-            // 3. S: LOGIC_MC
-            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc" },
-            // 4. S: IMAGE - Lasagne
+            { question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
+            { question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? Wähle die Option B. Gib 'antworta' ein.", answer: "antworta" },
+            { question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc" },
             { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.png", answer: "spinatlasagne" },
-            // 5. U: COUNTRY
             { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Ungarn) - Gib das Land ein.", answer: "ungarn" },
-            // 6. N: TEXT
-            { category: "TEXT", question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
-            // 7. S: MATH_MC
+            { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
             { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Wähle Option B. Gib 'summe' ein.", answer: "summe" },
-            // 8. K: LOGIC_MC
             { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ... Wähle Option B (32). Gib 'korrekt' ein.", answer: "korrekt" },
-            // 9. A: IMAGE - Apfel
             { category: "IMAGE", question: "Erkenne den Ort/Gegenstand auf dem Bild:", imageSrc: "Apfel.jpg", answer: "apfel" },
-            // 10. K: COUNTRY
             { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? (Flagge von Deutschland) - Gib das Land ein.", answer: "kroatien" },
-            // 11. A: TEXT
-            { category: "TEXT", question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" },
-            // 12. O: TEXT
-            { category: "TEXT", question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
-            // 13. T: LOGIC_MC
+            { question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" },
+            { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
             { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Wähle Option A. Gib 'tatsache' ein.", answer: "tatsache" },
-            // 14. R: SEARCH
             { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
-            // 15. I: IMAGE - Pinguine
             { category: "IMAGE", question: "Welches Tier ist das (Muss mit I beginnen)?", imageSrc: "Pinguin.png", answer: "igel" },
-            // 16. N: MATH_MC
             { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'numerisch' ein.", answer: "numerisch" },
-            // 17. K: TEXT
-            { category: "TEXT", question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
-            // 18. E: COUNTRY
+            { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
             { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Italien) - Gib das Land ein.", answer: "england" },
-            // 19. N: SEARCH
             { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
-            // 20. G: IMAGE - Eichhörnchen
             { category: "IMAGE", question: "Was ist das (Muss mit G beginnen)?", imageSrc: "Eichhörnchen.png", answer: "gold" },
-            // 21. E: LOGIC_MC
             { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", answer: "eine" },
-            // 22. H: TEXT
-            { category: "TEXT", question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
-            // 23. E: MATH_MC
+            { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
             { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis" },
-            // 24. N: TEXT
-            { category: "TEXT", question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
+            { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
         ];
         
         function shuffleArray(array) {
@@ -400,11 +376,13 @@
                     doorEl.classList.add('opened');
                 }
                 
+                // HIER IST DIE LOGIK-ÄNDERUNG: Prüfung basiert auf displayedNumber!
                 if (!canOpenDoor(displayedNumber) && !isOpened) {
                     doorEl.classList.add('locked');
                     doorEl.onclick = () => alert(`Tür ${displayedNumber} kannst du erst ab dem ${displayedNumber}. Dezember öffnen!`);
                 } else {
-                    doorEl.onclick = () => openDoor(currentDoorPosition);
+                    // Wichtig: openDoor wird mit der chronologischen Position und der angezeigten Zahl aufgerufen!
+                    doorEl.onclick = () => openDoor(currentDoorPosition, displayedNumber);
                 }
 
                 calendarEl.appendChild(doorEl);
@@ -474,10 +452,10 @@
         const riddleImage = document.getElementById('riddle-image');
 
 
-        function openDoor(day) {
-            currentDoorNumber = day;
-            
-            const assignment = assignments[currentDoorNumber]; 
+        function openDoor(currentDoorPosition, displayedNumber) {
+            currentDoorNumber = currentDoorPosition; // Interne Logik nutzt Position
+
+            const assignment = assignments[currentDoorPosition]; 
             if (!assignment) {
                  return;
             }
@@ -496,14 +474,15 @@
             }
             
             // Modal vorbereiten und öffnen
-            document.getElementById('modal-title').textContent = `Rätsel zu Tür ${currentDoorNumber}`;
+            // Titel verwendet jetzt die angezeigte Zahl
+            document.getElementById('modal-title').textContent = `Rätsel zu Tür ${displayedNumber}`; 
             answerInput.value = '';
             feedbackMsg.style.display = 'none';
             successMsg.style.display = 'none';
 
             // 6.1: Wenn Tür bereits geöffnet
             if (isOpened) {
-                document.getElementById('modal-title').textContent = `Tür ${currentDoorNumber} (Löst Position ${targetPosition} mit Buchstabe "${currentLetter}")`;
+                document.getElementById('modal-title').textContent = `Tür ${displayedNumber} (Löst Position ${targetPosition} mit Buchstabe "${currentLetter}")`;
                 document.getElementById('riddle-text').innerHTML = "Du hast dieses Rätsel bereits gelöst. Hier ist nochmal die Frage:";
                 document.getElementById('riddle-text').innerHTML += `<br><strong>${riddleData.question}</strong>`;
                 answerInput.style.display = 'none';
