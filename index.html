@@ -230,11 +230,11 @@
 
         const allRiddles = [
             // 1. L: TEXT
-            { category: "TEXT", question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
+            { question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
             // 2. A: MATH_MC
-            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? (A) 0, (B) 1, (C) 2. Gib das Wort 'AntwortB' ein (A).", answer: "antworta" },
+            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? Wähle die Option B. Gib 'antworta' ein.", answer: "antworta" },
             // 3. S: LOGIC_MC
-            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'SymbolC' ein (S).", answer: "symbolc" },
+            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc" },
             // 4. S: IMAGE - Lasagne
             { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.jpeg", answer: "spinatlasagne" },
             // 5. U: COUNTRY (Flagge)
@@ -242,9 +242,9 @@
             // 6. N: TEXT
             { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
             // 7. S: MATH_MC
-            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Gib das Wort 'Summe' ein (S).", answer: "summe" },
+            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Gib das Wort 'Summe' ein.", answer: "summe" },
             // 8. K: LOGIC_MC
-            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ... Wähle Option B (32). Gib 'Korrekt' ein (K).", answer: "korrekt" },
+            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ... Wähle Option B (32). Gib 'Korrekt' ein.", answer: "korrekt" },
             // 9. A: IMAGE - Apfel
             { category: "IMAGE", question: "Erkenne den Gegenstand auf dem Bild:", imageSrc: "Apfel.jpg", answer: "apfel" },
             // 10. K: COUNTRY (Flagge)
@@ -254,27 +254,27 @@
             // 12. O: TEXT
             { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
             // 13. T: LOGIC_MC
-            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Gib die 'T'atsächliche Antwort als Wort ein (T).", answer: "tatsache" },
+            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Gib die 'T'atsächliche Antwort als Wort ein.", answer: "tatsache" },
             // 14. R: SEARCH
             { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
             // 15. I: IMAGE - Pinguine
-            { category: "IMAGE", question: "Welches Tier ist das? (Muss mit I beginnen).", imageSrc: "Pinguin.jfif", answer: "igel" },
+            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.jfif", answer: "igel" },
             // 16. N: MATH_MC
-            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'N'umerisch ein (N).", answer: "numerisch" },
+            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'N'umerisch ein.", answer: "numerisch" },
             // 17. K: TEXT
             { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
             // 18. E: COUNTRY (Umriss)
             { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.jpg", answer: "england" },
             // 19. N: SEARCH
-            { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.' - Gib die 'N'umerische Antwort als Wort ein.", answer: "neun" },
+            { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
             // 20. G: IMAGE - Eichhörnchen
-            { category: "IMAGE", question: "Was ist das (Muss mit G beginnen)?", imageSrc: "Eichhörnchen.jfif", answer: "gold" },
+            { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.jfif", answer: "gold" },
             // 21. E: LOGIC_MC
-            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'Eine' ein (E).", answer: "eine" },
+            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", answer: "eine" },
             // 22. H: TEXT
             { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
             // 23. E: MATH_MC
-            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'Ergebnis' ein (E).", answer: "ergebnis" },
+            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis" },
             // 24. N: TEXT
             { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
         ];
@@ -286,51 +286,22 @@
             }
         }
         
-        // --- FUNKTION: ERSTELLT ZUFÄLLIGE ZUORDNUNGEN MIT REGELEINHALTUNG ---
+        // --- FUNKTION: ERSTELLT ZUORDNUNGEN (ENTRANDOMISIERT) ---
         function createConstrainedAssignments() {
-            const riddleGroups = {};
-            allRiddles.forEach((riddle, index) => {
-                const letter = riddle.answer.toUpperCase().charAt(0);
-                if (!riddleGroups[letter]) riddleGroups[letter] = [];
-                riddleGroups[letter].push(index); 
-            });
-
-            const positionGroups = {};
-            for (let i = 0; i < NUM_DOORS; i++) {
-                const requiredLetter = TARGET_LETTERS.charAt(i);
-                if (!positionGroups[requiredLetter]) positionGroups[requiredLetter] = [];
-                positionGroups[requiredLetter].push(i + 1); 
-            }
-
-            let riddlePositionPairs = [];
-            for (const letter in riddleGroups) {
-                const riddles = riddleGroups[letter];
-                const positions = positionGroups[letter];
-                
-                shuffleArray(riddles); 
-                shuffleArray(positions); 
-                
-                for (let i = 0; i < riddles.length; i++) {
-                    riddlePositionPairs.push({
-                        riddleIndex: riddles[i],
-                        targetPosition: positions[i]
-                    });
-                }
-            }
-            
-            shuffleArray(riddlePositionPairs); 
-
+            // FIXE ZUORDNUNG: Riddle Index 0 geht an Pos 1, Index 1 an Pos 2, etc.
             const doorAssignments = {};
             for (let i = 1; i <= NUM_DOORS; i++) {
-                doorAssignments[i] = riddlePositionPairs[i - 1];
+                doorAssignments[i] = { 
+                    riddleIndex: i - 1,
+                    targetPosition: i
+                };
             }
-
             return doorAssignments;
         }
 
-
         // INITIALISIERUNG DER ZUORDNUNGEN
         let assignments = JSON.parse(localStorage.getItem('assignments'));
+        // WICHTIG: Die Zuordnung MUSS FIX sein, also nur einmal erstellen und speichern.
         if (!assignments) {
             assignments = createConstrainedAssignments();
             localStorage.setItem('assignments', JSON.stringify(assignments));
@@ -350,9 +321,6 @@
         
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
-
-            return true;
-            
             const today = new Date(); 
             const currentMonth = today.getMonth() + 1;
             const currentDay = today.getDate();
@@ -368,6 +336,7 @@
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
 
+            // NEUE, SPEZIFISCHE REIHENFOLGE DER ANGEZEIGTEN ZAHLEN:
             const fixedDoorOrder = [
                 2, 21, 19, 3, 15, 23, 
                 17, 7, 14, 10, 12, 20, 
@@ -548,7 +517,7 @@
             const revealedLetter = riddleData.answer.toUpperCase().charAt(0);
 
             if (userAnswer === correctAnswer) {
-                processCorrectAnswer(riddleData, targetPosition, revealedLetter);
+                processCorrectAnswer(targetPosition, revealedLetter);
             } else {
                 feedbackMsg.textContent = 'Falsche Antwort. Versuch es nochmal!';
                 feedbackMsg.style.color = '#c0392b';
@@ -558,7 +527,7 @@
         }
         
         // Zentrale Logik zur Verarbeitung einer richtigen Antwort
-        function processCorrectAnswer(riddleData, targetPosition, revealedLetter) {
+        function processCorrectAnswer(targetPosition, revealedLetter) {
             feedbackMsg.style.display = 'none';
             successMsg.style.display = 'block';
             
@@ -610,5 +579,3 @@
     </script>
 </body>
 </html>
-
-
