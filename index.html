@@ -123,12 +123,13 @@
 
         .riddle-input {
             padding: 10px;
-            margin: 15px 0;
+            margin: 15px auto; 
             width: 80%;
             border-radius: 5px;
             text-align: center;
             font-size: 16px; 
             -webkit-text-size-adjust: 100%; 
+            display: block;
         }
 
         .riddle-button {
@@ -229,53 +230,29 @@
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
         const allRiddles = [
-            // 1. L: TEXT
             { question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
-            // 2. A: MATH_MC
             { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$? Wähle die Option B. Gib 'antworta' ein.", answer: "antworta" },
-            // 3. S: LOGIC_MC
             { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc" },
-            // 4. S: IMAGE - Lasagne
             { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.jpeg", answer: "spinatlasagne" },
-            // 5. U: COUNTRY (Flagge)
-            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn" },
-            // 6. N: TEXT
+            { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Ungarn) - Gib das Land ein.", imageSrc: "Ungarn.png", answer: "ungarn" },
             { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
-            // 7. S: MATH_MC
-            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Gib das Wort 'Summe' ein.", answer: "summe" },
-            // 8. K: LOGIC_MC
+            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Wähle Option B. Gib 'summe' ein.", answer: "summe" },
             { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ... Wähle Option B (32). Gib 'Korrekt' ein.", answer: "korrekt" },
-            // 9. A: IMAGE - Apfel
             { category: "IMAGE", question: "Erkenne den Gegenstand auf dem Bild:", imageSrc: "Apfel.jpg", answer: "apfel" },
-            // 10. K: COUNTRY (Flagge)
-            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien" },
-            // 11. A: TEXT
+            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? (Flagge von Deutschland) - Gib das Land ein.", answer: "kroatien" },
             { question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" },
-            // 12. O: TEXT
             { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
-            // 13. T: LOGIC_MC
             { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Gib die 'T'atsächliche Antwort als Wort ein.", answer: "tatsache" },
-            // 14. R: SEARCH
             { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
-            // 15. I: IMAGE - Pinguine
             { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.jfif", answer: "igel" },
-            // 16. N: MATH_MC
-            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'N'umerisch ein.", answer: "numerisch" },
-            // 17. K: TEXT
+            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'numerisch' ein.", answer: "numerisch" },
             { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
-            // 18. E: COUNTRY (Umriss)
-            { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.jpg", answer: "england" },
-            // 19. N: SEARCH
+            { category: "COUNTRY", question: "Zu welchem Land gehört dieser Umriss? (Umriss von Italien) - Gib das Land ein.", answer: "england" },
             { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
-            // 20. G: IMAGE - Eichhörnchen
             { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.jfif", answer: "gold" },
-            // 21. E: LOGIC_MC
             { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", answer: "eine" },
-            // 22. H: TEXT
             { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
-            // 23. E: MATH_MC
             { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis" },
-            // 24. N: TEXT
             { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
         ];
         
@@ -292,8 +269,8 @@
             const doorAssignments = {};
             for (let i = 1; i <= NUM_DOORS; i++) {
                 doorAssignments[i] = { 
-                    riddleIndex: i - 1,
-                    targetPosition: i
+                    riddleIndex: i - 1, // Index 0 -> Pos 1
+                    targetPosition: i   // Pos 1 -> Lücke 1 (L)
                 };
             }
             return doorAssignments;
@@ -301,7 +278,6 @@
 
         // INITIALISIERUNG DER ZUORDNUNGEN
         let assignments = JSON.parse(localStorage.getItem('assignments'));
-        // WICHTIG: Die Zuordnung MUSS FIX sein, also nur einmal erstellen und speichern.
         if (!assignments) {
             assignments = createConstrainedAssignments();
             localStorage.setItem('assignments', JSON.stringify(assignments));
@@ -321,9 +297,6 @@
         
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
-
-            return true;
-            
             const today = new Date(); 
             const currentMonth = today.getMonth() + 1;
             const currentDay = today.getDate();
@@ -339,7 +312,6 @@
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
 
-            // NEUE, SPEZIFISCHE REIHENFOLGE DER ANGEZEIGTEN ZAHLEN:
             const fixedDoorOrder = [
                 2, 21, 19, 3, 15, 23, 
                 17, 7, 14, 10, 12, 20, 
@@ -348,6 +320,7 @@
             ]; 
 
             for (let i = 1; i <= NUM_DOORS; i++) {
+                // Hier wird die angezeigte Zahl festgelegt
                 const displayedNumber = fixedDoorOrder[i - 1]; 
                 const currentDoorPosition = i; 
 
@@ -417,7 +390,7 @@
                  progressEl.style.display = 'none';
                  finalMessageEl.textContent = DISPLAY_MESSAGE.trim();
             } else {
-                 finalMessageEl.style.display = 'none';
+                 finalMessageEs.style.display = 'none';
                  progressEl.style.display = 'block';
             }
         }
@@ -447,7 +420,7 @@
 
 
         function openDoor(currentDoorPosition, displayedNumber) {
-            currentDoorNumber = currentDoorPosition; // Interne Logik nutzt Position
+            currentDoorNumber = currentDoorPosition; 
 
             const assignment = assignments[currentDoorPosition]; 
             if (!assignment) {
@@ -468,7 +441,6 @@
             }
             
             // Modal vorbereiten und öffnen
-            // Titel verwendet jetzt die angezeigte Zahl
             document.getElementById('modal-title').textContent = `Rätsel zu Tür ${displayedNumber}`; 
             answerInput.value = '';
             feedbackMsg.style.display = 'none';
@@ -582,4 +554,3 @@
     </script>
 </body>
 </html>
-
