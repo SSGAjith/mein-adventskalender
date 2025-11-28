@@ -350,9 +350,12 @@
         
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
+
+            return true;
+            
             const today = new Date(); 
-            const currentMonth = 12;
-            const currentDay = 8();
+            const currentMonth = today.getMonth() + 1;
+            const currentDay = today.getDate();
             
             if (currentMonth !== 12) {
                 return false;
@@ -606,4 +609,3 @@
     </script>
 </body>
 </html>
-
