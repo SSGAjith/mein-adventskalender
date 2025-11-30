@@ -107,15 +107,14 @@
             max-width: 500px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15); /* NEU: Quiz Schatten */
-            animation: pop 0.6s ease; /* NEU: Quiz Animation */
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15); 
+            animation: pop 0.6s ease; 
         }
-
         @keyframes pop {
             from { transform: scale(0.8); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
-
+        
         /* Bild-Container Styling */
         #riddle-image-container {
             margin: 15px 0;
@@ -127,35 +126,35 @@
             border-radius: 5px;
             border: 2px solid #c0392b;
         }
-
-        /* MC Buttons Container */
+        
+        /* MC-Optionen Styling NEU */
         #mc-options-container {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin: 20px 0;
+            gap: 10px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 350px;
         }
 
-        /* MC Button / Antwort prüfen Button */
-        .riddle-button, .mc-option-button {
+        .mc-option-button {
             width: 100%;
-            margin: 8px auto;
             padding: 12px;
             border: none;
-            border-radius: 12px; /* NEU: Rundere Ecken */
-            background: #2575fc; /* NEU: Blaue Farbe */
+            border-radius: 12px; 
+            background: #2575fc; 
             color: white;
-            font-size: 16px;
+            font-size: 1em;
             cursor: pointer;
             transition: 0.25s;
         }
-        
-        .riddle-button:hover, .mc-option-button:hover {
+
+        .mc-option-button:hover {
             background: #1b60d4;
-            transform: scale(1.01); /* Leichter Zoom-Effekt */
+            transform: scale(1.01); 
         }
-        
-        /* Das normale Textfeld */
+        /* ENDE MC STYLING */
+
         .riddle-input {
             padding: 10px;
             margin: 15px auto; 
@@ -165,14 +164,17 @@
             font-size: 16px; 
             -webkit-text-size-adjust: 100%; 
             display: block;
-            border: 1px solid #ccc; /* Hinzugefügt für Sichtbarkeit */
+            border: 1px solid #ccc;
         }
 
-        /* Ergebnis-Anzeige (Richtig/Falsch) */
-        #result-text {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
+        .riddle-button {
+            background-color: #c0392b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
         }
         
         /* --- 4. Fortschrittsanzeige (Unverändert) --- */
@@ -252,8 +254,6 @@
                 <input type="text" id="riddle-answer" class="riddle-input" placeholder="Deine Antwort eingeben...">
             </div>
             
-            <p id="result-text"></p>
-            
             <button id="submit-answer" class="riddle-button">Antwort prüfen</button>
             <p id="feedback-message" style="margin-top: 10px; font-weight: bold;"></p>
             <p id="success-message" style="margin-top: 10px; color: green; font-weight: bold; display: none;">✔️ Richtig! Tür geöffnet!</p>
@@ -268,53 +268,54 @@
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
         // RÄTSELPOOL: Die Antwort (answer) ist das benötigte Schlüsselwort (für Check und Letter-Derivation)
+        // MC-Rätsel: 'options' sind die angezeigten Button-Texte, 'correctAnswerKey' ist der Text der korrekten Option.
         const allRiddles = [
             // 1. L: TEXT
             { category: "TEXT", question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
             // 2. A: MATH_MC
-            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$?", options: ["A) 0", "B) 1", "C) 2"], correctAnswerKey: "B) 1", answer: "antworta" },
+            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$?", options: ["0", "1", "2"], correctAnswerKey: "1", answer: "antworta" },
             // 3. S: LOGIC_MC
-            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? (A, B, C)", options: ["A", "B", "C"], correctAnswerKey: "C", answer: "symbolc" },
-            // 4. S: IMAGE
+            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? (A, B, C)", options: ["A - Würfel A", "B - Würfel B", "C - Würfel C"], correctAnswerKey: "C - Würfel C", answer: "symbolc" },
+            // 4. S: IMAGE - Lasagne
             { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.jpeg", answer: "spinatlasagne" },
-            // 5. U: COUNTRY
+            // 5. U: COUNTRY (Flagge)
             { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn" },
             // 6. N: TEXT
             { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
             // 7. S: MATH_MC
-            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$.", options: ["A) x=2", "B) x=3", "C) x=4"], correctAnswerKey: "B) x=3", answer: "summe" },
+            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$.", options: ["x=2", "x=3", "x=4"], correctAnswerKey: "x=3", answer: "summe" },
             // 8. K: LOGIC_MC
-            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", options: ["A) 24", "B) 32", "C) 64"], correctAnswerKey: "B) 32", answer: "korrekt" },
-            // 9. A: IMAGE
+            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", options: ["24", "32", "64"], correctAnswerKey: "32", answer: "korrekt" },
+            // 9. A: IMAGE - Apfel
             { category: "IMAGE", question: "Erkenne den Gegenstand auf dem Bild:", imageSrc: "Apfel.jpg", answer: "apfel" },
-            // 10. K: COUNTRY
+            // 10. K: COUNTRY (Flagge)
             { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien" },
             // 11. A: TEXT
             { question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" },
             // 12. O: TEXT
             { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
             // 13. T: LOGIC_MC
-            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig?", options: ["A) 0", "B) 3", "C) 5"], correctAnswerKey: "A) 0", answer: "tatsache" },
+            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig?", options: ["0", "3", "5"], correctAnswerKey: "0", answer: "tatsache" },
             // 14. R: SEARCH
             { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
-            // 15. I: IMAGE
+            // 15. I: IMAGE - Pinguine
             { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.jfif", answer: "igel" },
             // 16. N: MATH_MC
-            { category: "MATH_MC", question: "Lösung von $\log_2(8)$?", options: ["A) 2", "B) 3", "C) 4"], correctAnswerKey: "B) 3", answer: "numerisch" },
+            { category: "MATH_MC", question: "Lösung von $\log_2(8)$?", options: ["2", "3", "4"], correctAnswerKey: "3", answer: "numerisch" },
             // 17. K: TEXT
             { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
-            // 18. E: COUNTRY
+            // 18. E: COUNTRY (Umriss)
             { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.png", answer: "england" },
             // 19. N: SEARCH
             { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
-            // 20. G: IMAGE
+            // 20. G: IMAGE - Eichhörnchen
             { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.jfif", answer: "gold" },
             // 21. E: LOGIC_MC
-            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es?", options: ["A) 1 Stunde", "B) 1,5 Stunden", "C) 90 Minuten"], correctAnswerKey: "A) 1 Stunde", answer: "eine" },
+            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es?", options: ["1 Stunde", "1,5 Stunden", "90 Minuten"], correctAnswerKey: "1 Stunde", answer: "eine" },
             // 22. H: TEXT
             { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
             // 23. E: MATH_MC
-            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$?", options: ["A) $e^{3x}$", "B) $3e^{3x}$", "C) $e^{3x}/3$"], correctAnswerKey: "B) $3e^{3x}$", answer: "ergebnis" },
+            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$?", options: ["$e^{3x}$", "$3e^{3x}$", "$e^{3x}/3$"], correctAnswerKey: "$3e^{3x}$", answer: "ergebnis" },
             // 24. N: TEXT
             { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
         ];
@@ -361,7 +362,6 @@
         function canOpenDoor(day) {
 
             return true;
-            
             const today = new Date(); 
             const currentMonth = today.getMonth() + 1;
             const currentDay = today.getDate();
@@ -481,6 +481,9 @@
         const successMsg = document.getElementById('success-message');
         const riddleImageContainer = document.getElementById('riddle-image-container');
         const riddleImage = document.getElementById('riddle-image');
+        const mcOptionsContainer = document.createElement('div'); // Container für MC-Buttons
+        mcOptionsContainer.id = 'mc-options-container'; 
+        mcOptionsContainer.style.cssText = 'display: flex; flex-direction: column; gap: 10px; margin: 20px auto; width: 90%; max-width: 350px;';
 
 
         function openDoor(currentDoorPosition, displayedNumber) {
@@ -509,6 +512,10 @@
             answerInput.value = '';
             feedbackMsg.style.display = 'none';
             successMsg.style.display = 'none';
+            
+            // MC Buttons Container zurücksetzen und entfernen
+            mcOptionsContainer.innerHTML = ''; 
+            mcOptionsContainer.remove(); 
 
             // 6.1: Wenn Tür bereits geöffnet
             if (isOpened) {
@@ -527,9 +534,37 @@
             // 6.2: Modal-Inhalt dynamisch rendern
             document.getElementById('riddle-text').innerHTML = riddleData.question;
             
-            // Textfeld und Submit Button anzeigen
-            answerInput.style.display = 'block';
-            submitBtn.style.display = 'block';
+            const isMC = riddleData.category === 'MATH_MC' || riddleData.category === 'LOGIC_MC' || riddleData.category === 'COUNTRY';
+            
+            if (isMC) {
+                // MC: Buttons rendern, Textfeld/Submit-Button ausblenden
+                answerInput.style.display = 'none';
+                submitBtn.style.display = 'none';
+                
+                // MC-Container einfügen
+                document.getElementById('riddle-content-container').appendChild(mcOptionsContainer);
+                
+                // Optionen rendern
+                const options = riddleData.options ? riddleData.options : ["A", "B", "C", "D"]; // Default Optionen
+                
+                options.forEach((optionText) => {
+                    const button = document.createElement('button');
+                    button.classList.add('mc-option-button');
+                    button.textContent = optionText;
+                    
+                    button.onclick = () => {
+                         const userOptionText = optionText;
+                         const correctAnswerKey = riddleData.correctAnswerKey;
+                         checkMultipleChoiceAnswer(userOptionText, correctAnswerKey, riddleData);
+                    };
+                    mcOptionsContainer.appendChild(button);
+                });
+
+            } else {
+                // Text/Bild-Rätsel: Textfeld/Submit-Button anzeigen
+                answerInput.style.display = 'block';
+                submitBtn.style.display = 'block';
+            }
 
             // Bild anzeigen, wenn vorhanden
             if (riddleData.imageSrc) {
@@ -540,13 +575,22 @@
             }
 
             modal.style.display = 'block';
-            // answerInput.focus() WURDE ENTFERNT
+            // answerInput.focus() entfernt
         }
 
         function checkAnswer() {
             if (currentDoorNumber === null || !currentRiddle) return;
             
             const riddleData = currentRiddle;
+            // Wenn es ein MC-Rätsel ist, sollte diese Funktion nicht über den Submit-Button aufgerufen werden.
+            if (riddleData.category === 'MATH_MC' || riddleData.category === 'LOGIC_MC' || riddleData.category === 'COUNTRY') {
+                 feedbackMsg.textContent = 'Bitte wähle eine Option aus den Buttons!';
+                 feedbackMsg.style.color = 'red';
+                 feedbackMsg.style.display = 'block';
+                 return;
+            }
+
+
             const assignment = assignments[currentDoorNumber];
             const targetPosition = assignment.targetPosition; 
             
@@ -565,6 +609,26 @@
             }
         }
         
+        // NEU: Logik für Multiple Choice Button Klick
+        function checkMultipleChoiceAnswer(userOptionText, correctAnswerKey, riddleData) {
+            const assignment = assignments[currentDoorNumber];
+            const targetPosition = assignment.targetPosition; 
+            
+            // Vergleiche die geklickte Option mit dem Schlüsselwort der korrekten Antwort
+            const isCorrect = userOptionText === correctAnswerKey;
+
+            if (isCorrect) {
+                // Die Antwort für den Letter-Derivation ist das gespeicherte Schlüsselwort in riddleData.answer
+                const revealedLetter = riddleData.answer.toUpperCase().charAt(0);
+                processCorrectAnswer(targetPosition, revealedLetter);
+            } else {
+                 feedbackMsg.textContent = '❌ Falsche Auswahl. Versuch es nochmal!';
+                 feedbackMsg.style.color = 'red';
+                 feedbackMsg.style.display = 'block';
+                 successMsg.style.display = 'none';
+            }
+        }
+        
         // Zentrale Logik zur Verarbeitung einer richtigen Antwort
         function processCorrectAnswer(targetPosition, revealedLetter) {
             feedbackMsg.style.display = 'none';
@@ -580,7 +644,7 @@
                     doorEl.classList.add('opened');
                 }
                 
-                successMsg.textContent = `Richtig! Der Buchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet.`;
+                successMsg.textContent = `✔️ Richtig! Der Buchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet!`;
                 updateProgressDisplay(); 
             }
             
@@ -618,4 +682,3 @@
     </script>
 </body>
 </html>
-
