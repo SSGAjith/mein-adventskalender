@@ -86,7 +86,7 @@
             background-color: #e67e22;
         }
         
-        /* --- 3. Modal und Eingabe --- */
+        /* --- 3. Modal und Eingabe/MC-Styling (NEU) --- */
         .modal {
             display: none;
             position: fixed;
@@ -101,14 +101,21 @@
 
         .modal-content {
             background-color: #fff;
-            margin: 15% auto;
+            margin: 5% auto; /* NEU: Etwas weniger margin oben */
             padding: 30px;
             width: 90%;
             max-width: 500px;
             border-radius: 10px;
             text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15); /* NEU: Quiz Schatten */
+            animation: pop 0.6s ease; /* NEU: Quiz Animation */
         }
-        
+
+        @keyframes pop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
         /* Bild-Container Styling */
         #riddle-image-container {
             margin: 15px 0;
@@ -121,6 +128,34 @@
             border: 2px solid #c0392b;
         }
 
+        /* MC Buttons Container */
+        #mc-options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        /* MC Button / Antwort prüfen Button */
+        .riddle-button, .mc-option-button {
+            width: 100%;
+            margin: 8px auto;
+            padding: 12px;
+            border: none;
+            border-radius: 12px; /* NEU: Rundere Ecken */
+            background: #2575fc; /* NEU: Blaue Farbe */
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+        
+        .riddle-button:hover, .mc-option-button:hover {
+            background: #1b60d4;
+            transform: scale(1.01); /* Leichter Zoom-Effekt */
+        }
+        
+        /* Das normale Textfeld */
         .riddle-input {
             padding: 10px;
             margin: 15px auto; 
@@ -130,19 +165,17 @@
             font-size: 16px; 
             -webkit-text-size-adjust: 100%; 
             display: block;
+            border: 1px solid #ccc; /* Hinzugefügt für Sichtbarkeit */
         }
 
-        .riddle-button {
-            background-color: #c0392b;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
+        /* Ergebnis-Anzeige (Richtig/Falsch) */
+        #result-text {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
         }
         
-        /* --- 4. Fortschrittsanzeige --- */
+        /* --- 4. Fortschrittsanzeige (Unverändert) --- */
         #progress-display-container {
             margin-top: 30px;
             padding: 10px; 
@@ -213,12 +246,17 @@
                     <img id="riddle-image" src="" alt="Rätselbild">
                 </div>
                 
+                <div id="mc-options-container">
+                    </div>
+                
                 <input type="text" id="riddle-answer" class="riddle-input" placeholder="Deine Antwort eingeben...">
             </div>
             
+            <p id="result-text"></p>
+            
             <button id="submit-answer" class="riddle-button">Antwort prüfen</button>
             <p id="feedback-message" style="margin-top: 10px; font-weight: bold;"></p>
-            <p id="success-message" style="margin-top: 10px; color: #27ae60; font-weight: bold; display: none;">Richtig! Tür geöffnet!</p>
+            <p id="success-message" style="margin-top: 10px; color: green; font-weight: bold; display: none;">✔️ Richtig! Tür geöffnet!</p>
         </div>
     </div>
 
@@ -229,31 +267,56 @@
         const NUM_DOORS = 24;
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
+        // RÄTSELPOOL: Die Antwort (answer) ist das benötigte Schlüsselwort (für Check und Letter-Derivation)
         const allRiddles = [
-            { question: "Was ist groß, wenn es jung ist, und klein, wenn es alt ist?", answer: "kerze" },
-            { category: "IMAGE", question: "Schreib deine Lösung hier rein", imageSrc: "Mathe1.png", answer: "0" },
-            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc" },
-            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.png", answer: "spinatlasagne" },
+            // 1. L: TEXT
+            { category: "TEXT", question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
+            // 2. A: MATH_MC
+            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$?", options: ["A) 0", "B) 1", "C) 2"], correctAnswerKey: "B) 1", answer: "antworta" },
+            // 3. S: LOGIC_MC
+            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? (A, B, C)", options: ["A", "B", "C"], correctAnswerKey: "C", answer: "symbolc" },
+            // 4. S: IMAGE
+            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.jpeg", answer: "spinatlasagne" },
+            // 5. U: COUNTRY
             { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn" },
-            { question: "Was hat viele Nadeln, kann aber nicht nähen?", answer: "tannenbaum" },
-            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Wähle Option B. Gib 'summe' ein.", answer: "summe" },
-            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", answer: "32" },
-            { category: "IMAGE", question: "Was siehst du auf diesem Bild:", imageSrc: "Apfel.jpg", answer: "apfel" },
-            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien" },
-            { question: "Was kann einen Raum füllen, nimmt aber keinen Platz ein?", answer: "licht" },
+            // 6. N: TEXT
+            { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
+            // 7. S: MATH_MC
+            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$.", options: ["A) x=2", "B) x=3", "C) x=4"], correctAnswerKey: "B) x=3", answer: "summe" },
+            // 8. K: LOGIC_MC
+            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", options: ["A) 24", "B) 32", "C) 64"], correctAnswerKey: "B) 32", answer: "korrekt" },
+            // 9. A: IMAGE
+            { category: "IMAGE", question: "Erkenne den Gegenstand auf dem Bild:", imageSrc: "Apfel.jpg", answer: "apfel" },
+            // 10. K: COUNTRY
+            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien" },
+            // 11. A: TEXT
+            { question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" },
+            // 12. O: TEXT
             { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
-            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Gib die 'T'atsächliche Antwort als Wort ein.", answer: "tatsache" },
+            // 13. T: LOGIC_MC
+            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig?", options: ["A) 0", "B) 3", "C) 5"], correctAnswerKey: "A) 0", answer: "tatsache" },
+            // 14. R: SEARCH
             { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
-            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.png", answer: "pinguin" },
-            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'Numerisch' ein.", answer: "numerisch" },
-            { question: "Was ist immer vor dir, aber du kannst es nicht sehen?", answer: "zukunft" },
+            // 15. I: IMAGE
+            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.jfif", answer: "igel" },
+            // 16. N: MATH_MC
+            { category: "MATH_MC", question: "Lösung von $\log_2(8)$?", options: ["A) 2", "B) 3", "C) 4"], correctAnswerKey: "B) 3", answer: "numerisch" },
+            // 17. K: TEXT
+            { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
+            // 18. E: COUNTRY
             { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.png", answer: "england" },
+            // 19. N: SEARCH
             { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
-            { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.png", answer: "eichhörnchen" },
-            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", answer: "eine" },
-            { question: "Je mehr davon da ist, desto weniger sieht man. Was ist es?", answer: "dunkelheit" },
-            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis" },
-            { question: "Was kann man brechen ohne es anzufassen oder zu sehen", answer: "versprechen" } 
+            // 20. G: IMAGE
+            { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.jfif", answer: "gold" },
+            // 21. E: LOGIC_MC
+            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es?", options: ["A) 1 Stunde", "B) 1,5 Stunden", "C) 90 Minuten"], correctAnswerKey: "A) 1 Stunde", answer: "eine" },
+            // 22. H: TEXT
+            { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
+            // 23. E: MATH_MC
+            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$?", options: ["A) $e^{3x}$", "B) $3e^{3x}$", "C) $e^{3x}/3$"], correctAnswerKey: "B) $3e^{3x}$", answer: "ergebnis" },
+            // 24. N: TEXT
+            { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
         ];
         
         function shuffleArray(array) {
@@ -296,9 +359,6 @@
         
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
-
-            return true;
-            
             const today = new Date(); 
             const currentMonth = today.getMonth() + 1;
             const currentDay = today.getDate();
@@ -348,7 +408,7 @@
                 
                 if (!canOpenDoor(displayedNumber) && !isOpened) {
                     doorEl.classList.add('locked');
-                    doorEl.onclick = () => alert(`Du kannst Tür ${displayedNumber} erst ab dem ${displayedNumber}. Dezember öffnen!`);
+                    doorEl.onclick = () => alert(`Tür ${displayedNumber} kannst du erst ab dem ${displayedNumber}. Dezember öffnen!`);
                 } else {
                     doorEl.onclick = () => openDoor(currentDoorPosition, displayedNumber);
                 }
@@ -389,7 +449,7 @@
             if (unlockedCount === NUM_DOORS) {
                  finalMessageEl.style.display = 'block';
                  progressEl.style.display = 'none';
-                 finalMessageEs.textContent = DISPLAY_MESSAGE.trim();
+                 finalMessageEl.textContent = DISPLAY_MESSAGE.trim();
             } else {
                  finalMessageEs.style.display = 'none';
                  progressEl.style.display = 'block';
@@ -477,7 +537,7 @@
             }
 
             modal.style.display = 'block';
-            // answerInput.focus(); <--- WURDE ENTFERNT
+            // answerInput.focus() WURDE ENTFERNT
         }
 
         function checkAnswer() {
@@ -555,9 +615,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
