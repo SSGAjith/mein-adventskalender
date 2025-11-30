@@ -22,9 +22,7 @@
             color: #c0392b;
             margin-bottom: 30px;
             text-align: center;
-            
             font-size: 6vw; 
-            
             white-space: nowrap; 
             padding: 0 5px; 
             box-sizing: border-box;
@@ -86,7 +84,7 @@
             background-color: #e67e22;
         }
         
-        /* --- 3. Modal und Eingabe/MC-Styling (NEU) --- */
+        /* --- 3. Modal und Eingabe --- */
         .modal {
             display: none;
             position: fixed;
@@ -101,18 +99,12 @@
 
         .modal-content {
             background-color: #fff;
-            margin: 5% auto; /* NEU: Etwas weniger margin oben */
+            margin: 15% auto;
             padding: 30px;
             width: 90%;
             max-width: 500px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15); 
-            animation: pop 0.6s ease; 
-        }
-        @keyframes pop {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
         
         /* Bild-Container Styling */
@@ -126,34 +118,6 @@
             border-radius: 5px;
             border: 2px solid #c0392b;
         }
-        
-        /* MC-Optionen Styling NEU */
-        #mc-options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 350px;
-        }
-
-        .mc-option-button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 12px; 
-            background: #2575fc; 
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .mc-option-button:hover {
-            background: #1b60d4;
-            transform: scale(1.01); 
-        }
-        /* ENDE MC STYLING */
 
         .riddle-input {
             padding: 10px;
@@ -164,9 +128,34 @@
             font-size: 16px; 
             -webkit-text-size-adjust: 100%; 
             display: block;
-            border: 1px solid #ccc;
+        }
+        
+        /* NEU: MC-Buttons Container */
+        #multiple-choice-container {
+            margin-top: 15px;
+            display: none; /* Standardmäßig versteckt */
         }
 
+        /* NEU: MC-Buttons */
+        .mc-button {
+            background-color: #3498db; 
+            color: white;
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.1s;
+            width: 100%; 
+            max-width: 200px; 
+            display: inline-block; 
+        }
+
+        .mc-button:hover {
+            background-color: #2980b9;
+        }
+        
         .riddle-button {
             background-color: #c0392b;
             color: white;
@@ -177,7 +166,7 @@
             font-size: 1em;
         }
         
-        /* --- 4. Fortschrittsanzeige (Unverändert) --- */
+        /* --- 4. Fortschrittsanzeige --- */
         #progress-display-container {
             margin-top: 30px;
             padding: 10px; 
@@ -248,7 +237,7 @@
                     <img id="riddle-image" src="" alt="Rätselbild">
                 </div>
                 
-                <div id="mc-options-container">
+                <div id="multiple-choice-container">
                     </div>
                 
                 <input type="text" id="riddle-answer" class="riddle-input" placeholder="Deine Antwort eingeben...">
@@ -256,68 +245,51 @@
             
             <button id="submit-answer" class="riddle-button">Antwort prüfen</button>
             <p id="feedback-message" style="margin-top: 10px; font-weight: bold;"></p>
-            <p id="success-message" style="margin-top: 10px; color: green; font-weight: bold; display: none;">✔️ Richtig! Tür geöffnet!</p>
+            <p id="success-message" style="margin-top: 10px; color: #27ae60; font-weight: bold; display: none;">Richtig! Tür geöffnet!</p>
         </div>
     </div>
 
 
     <script>
-        // --- 1. DATEN UND INITIALISIERUNG ---
+        // --- 1. DATEN UND INITIALISIERUNG (GEÄNDERT) ---
         const DISPLAY_MESSAGE = "LASS UNS KAKAO TRINKEN GEHEN "; 
         const NUM_DOORS = 24;
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
-        // RÄTSELPOOL: Die Antwort (answer) ist das benötigte Schlüsselwort (für Check und Letter-Derivation)
-        // MC-Rätsel: 'options' sind die angezeigten Button-Texte, 'correctAnswerKey' ist der Text der korrekten Option.
+        // GEÄNDERT: IMAGE-Rätsel haben jetzt ein 'options'-Feld
         const allRiddles = [
-            // 1. L: TEXT
-            { category: "TEXT", question: "Was hat eine Zunge, aber keinen Mund, und kann doch sprechen?", answer: "lautsprecher" },
-            // 2. A: MATH_MC
-            { category: "MATH_MC", question: "Was ist $\int_0^{\pi/2} \sin(x) dx$?", options: ["0", "1", "2"], correctAnswerKey: "1", answer: "antworta" },
-            // 3. S: LOGIC_MC
-            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? (A, B, C)", options: ["A - Würfel A", "B - Würfel B", "C - Würfel C"], correctAnswerKey: "C - Würfel C", answer: "symbolc" },
-            // 4. S: IMAGE - Lasagne
-            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.jpeg", answer: "spinatlasagne" },
-            // 5. U: COUNTRY (Flagge)
-            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn" },
-            // 6. N: TEXT
-            { question: "Was hat zwar ein Auge, sieht aber nichts?", answer: "nadel" },
-            // 7. S: MATH_MC
-            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$.", options: ["x=2", "x=3", "x=4"], correctAnswerKey: "x=3", answer: "summe" },
-            // 8. K: LOGIC_MC
-            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", options: ["24", "32", "64"], correctAnswerKey: "32", answer: "korrekt" },
-            // 9. A: IMAGE - Apfel
-            { category: "IMAGE", question: "Erkenne den Gegenstand auf dem Bild:", imageSrc: "Apfel.jpg", answer: "apfel" },
-            // 10. K: COUNTRY (Flagge)
-            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien" },
-            // 11. A: TEXT
-            { question: "Was ist das, was man besitzt, aber niemals anfassen kann?", answer: "alter" },
-            // 12. O: TEXT
+            { question: "Was ist groß, wenn es jung ist, und klein, wenn es alt ist?", answer: "kerze" },
+            // GEÄNDERT: Rätsel 2 ist jetzt MC
+            { category: "IMAGE", question: "Was siehst du auf diesem Bild? (Lösung ist '0')", imageSrc: "Mathe1.png", answer: "0", options: ["1", "3", "0", "9"] },
+            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc" },
+            // GEÄNDERT: Rätsel 4 ist jetzt MC
+            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.png", answer: "spinatlasagne", options: ["Nudelauflauf", "Spinatlasagne", "Gemüsepfanne", "Pizza"] },
+            // GEÄNDERT: Rätsel 5 ist jetzt MC
+            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn", options: ["Bulgarien", "Iran", "Ungarn", "Italien"] },
+            { question: "Was hat viele Nadeln, kann aber nicht nähen?", answer: "tannenbaum" },
+            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Wähle Option B. Gib 'summe' ein.", answer: "summe" },
+            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", answer: "32" },
+            // GEÄNDERT: Rätsel 9 ist jetzt MC
+            { category: "IMAGE", question: "Was siehst du auf diesem Bild:", imageSrc: "Apfel.jpg", answer: "apfel", options: ["Orange", "Zitrone", "Birne", "Apfel"] },
+            // GEÄNDERT: Rätsel 10 ist jetzt MC
+            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien", options: ["Serbien", "Kroatien", "Slowakei", "Tschechien"] },
+            { question: "Was kann einen Raum füllen, nimmt aber keinen Platz ein?", answer: "licht" },
             { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
-            // 13. T: LOGIC_MC
-            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig?", options: ["0", "3", "5"], correctAnswerKey: "0", answer: "tatsache" },
-            // 14. R: SEARCH
+            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Gib die 'T'atsächliche Antwort als Wort ein.", answer: "tatsache" },
             { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
-            // 15. I: IMAGE - Pinguine
-            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.jfif", answer: "igel" },
-            // 16. N: MATH_MC
-            { category: "MATH_MC", question: "Lösung von $\log_2(8)$?", options: ["2", "3", "4"], correctAnswerKey: "3", answer: "numerisch" },
-            // 17. K: TEXT
-            { question: "Ich habe Städte, aber keine Häuser. Ich habe Berge, aber keine Bäume. Was bin ich?", answer: "karte" },
-            // 18. E: COUNTRY (Umriss)
-            { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.png", answer: "england" },
-            // 19. N: SEARCH
+            // GEÄNDERT: Rätsel 15 ist jetzt MC
+            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.png", answer: "pinguin", options: ["Möwe", "Albatros", "Pinguin", "Pelikan"] },
+            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'Numerisch' ein.", answer: "numerisch" },
+            { question: "Was ist immer vor dir, aber du kannst es nicht sehen?", answer: "zukunft" },
+            // GEÄNDERT: Rätsel 18 ist jetzt MC
+            { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.png", answer: "england", options: ["Frankreich", "Irland", "Schottland", "England"] },
             { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
-            // 20. G: IMAGE - Eichhörnchen
-            { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.jfif", answer: "gold" },
-            // 21. E: LOGIC_MC
-            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es?", options: ["1 Stunde", "1,5 Stunden", "90 Minuten"], correctAnswerKey: "1 Stunde", answer: "eine" },
-            // 22. H: TEXT
-            { question: "Ich bin leicht wie eine Feder, aber der stärkste Mensch kann mich nicht länger als fünf Minuten halten. Was bin ich?", answer: "hauch" },
-            // 23. E: MATH_MC
-            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$?", options: ["$e^{3x}$", "$3e^{3x}$", "$e^{3x}/3$"], correctAnswerKey: "$3e^{3x}$", answer: "ergebnis" },
-            // 24. N: TEXT
-            { question: "Was ist voller Löcher, hält aber trotzdem Wasser?", answer: "netz" } 
+            // GEÄNDERT: Rätsel 20 ist jetzt MC
+            { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.png", answer: "eichhörnchen", options: ["Marder", "Ratte", "Eichhörnchen", "Maulwurf"] },
+            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", answer: "eine" },
+            { question: "Je mehr davon da ist, desto weniger sieht man. Was ist es?", answer: "dunkelheit" },
+            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis" },
+            { question: "Was kann man brechen ohne es anzufassen oder zu sehen", answer: "versprechen" } 
         ];
         
         function shuffleArray(array) {
@@ -333,7 +305,7 @@
             for (let i = 1; i <= NUM_DOORS; i++) {
                 doorAssignments[i] = { 
                     riddleIndex: i - 1, 
-                    targetPosition: i   
+                    targetPosition: i  
                 };
             }
             return doorAssignments;
@@ -360,8 +332,8 @@
         
         // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
-
             return true;
+            
             const today = new Date(); 
             const currentMonth = today.getMonth() + 1;
             const currentDay = today.getDate();
@@ -372,7 +344,7 @@
             return day <= currentDay;
         }
 
-        // --- 3. RENDERN KALENDER (MODIFIZIERT) ---
+        // --- 3. RENDERN KALENDER (UNVERÄNDERT) ---
         function renderCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
@@ -411,7 +383,7 @@
                 
                 if (!canOpenDoor(displayedNumber) && !isOpened) {
                     doorEl.classList.add('locked');
-                    doorEl.onclick = () => alert(`Tür ${displayedNumber} kannst du erst ab dem ${displayedNumber}. Dezember öffnen!`);
+                    doorEl.onclick = () => alert(`Du kannst Tür ${displayedNumber} erst ab dem ${displayedNumber}. Dezember öffnen!`);
                 } else {
                     doorEl.onclick = () => openDoor(currentDoorPosition, displayedNumber);
                 }
@@ -422,7 +394,7 @@
             updateProgressDisplay();
         }
         
-        // --- 4. FORTSCHRITTSANZEIGE LOGIK ---
+        // --- 4. FORTSCHRITTSANZEIGE LOGIK (UNVERÄNDERT) ---
         function updateProgressDisplay() {
             const progressEl = document.getElementById('progress-display');
             const finalMessageEl = document.getElementById('final-message-text');
@@ -452,15 +424,15 @@
             if (unlockedCount === NUM_DOORS) {
                  finalMessageEl.style.display = 'block';
                  progressEl.style.display = 'none';
-                 finalMessageEl.textContent = DISPLAY_MESSAGE.trim();
+                 finalMessageEl.textContent = DISPLAY_MESSAGE.trim(); // Korrektur der ID
             } else {
-                 finalMessageEs.style.display = 'none';
+                 finalMessageEl.style.display = 'none'; // Korrektur der ID
                  progressEl.style.display = 'block';
             }
         }
 
 
-        // --- 5. RESET FUNKTION ---
+        // --- 5. RESET FUNKTION (UNVERÄNDERT) ---
         function resetCalendar() {
             if (confirm('Bist du sicher, dass du den Fortschritt und die Zuordnungen zurücksetzen möchtest?')) {
                 localStorage.removeItem('revealedLetters'); 
@@ -471,7 +443,7 @@
         window.resetCalendar = resetCalendar;
 
 
-        // --- 6. MODAL/SPIEL-LOGIK ---
+        // --- 6. MODAL/SPIEL-LOGIK (GEÄNDERT) ---
         
         const modal = document.getElementById('riddleModal');
         const closeBtn = document.querySelector('.close-button');
@@ -481,11 +453,20 @@
         const successMsg = document.getElementById('success-message');
         const riddleImageContainer = document.getElementById('riddle-image-container');
         const riddleImage = document.getElementById('riddle-image');
-        const mcOptionsContainer = document.createElement('div'); // Container für MC-Buttons
-        mcOptionsContainer.id = 'mc-options-container'; 
-        mcOptionsContainer.style.cssText = 'display: flex; flex-direction: column; gap: 10px; margin: 20px auto; width: 90%; max-width: 350px;';
+        const mcContainer = document.getElementById('multiple-choice-container'); // NEU
 
 
+        // NEU: Hilfsfunktion zum Mischen von MC-Optionen
+        function shuffleOptions(options, correctAnswer) {
+            // Stellen Sie sicher, dass die korrekte Antwort enthalten ist
+            if (!options.map(cleanAnswer).includes(cleanAnswer(correctAnswer))) {
+                options.push(correctAnswer);
+            }
+            shuffleArray(options);
+            return options;
+        }
+        
+        // GEÄNDERT: openDoor mit Logik für MC-Buttons
         function openDoor(currentDoorPosition, displayedNumber) {
             currentDoorNumber = currentDoorPosition; 
 
@@ -512,10 +493,7 @@
             answerInput.value = '';
             feedbackMsg.style.display = 'none';
             successMsg.style.display = 'none';
-            
-            // MC Buttons Container zurücksetzen und entfernen
-            mcOptionsContainer.innerHTML = ''; 
-            mcOptionsContainer.remove(); 
+            mcContainer.innerHTML = ''; // MC-Buttons leeren
 
             // 6.1: Wenn Tür bereits geöffnet
             if (isOpened) {
@@ -524,6 +502,7 @@
                 document.getElementById('riddle-text').innerHTML += `<br><strong>${riddleData.question}</strong>`;
                 answerInput.style.display = 'none';
                 submitBtn.style.display = 'none';
+                mcContainer.style.display = 'none'; // MC-Buttons verstecken
                 riddleImageContainer.style.display = 'none';
                 successMsg.textContent = `Tür ist geöffnet! Der Buchstabe "${currentLetter}" auf Position ${targetPosition} ist sichtbar.`;
                 successMsg.style.display = 'block';
@@ -534,36 +513,29 @@
             // 6.2: Modal-Inhalt dynamisch rendern
             document.getElementById('riddle-text').innerHTML = riddleData.question;
             
-            const isMC = riddleData.category === 'MATH_MC' || riddleData.category === 'LOGIC_MC' || riddleData.category === 'COUNTRY';
+            const isMC = (riddleData.category === "IMAGE" || riddleData.category === "COUNTRY") && riddleData.options && riddleData.options.length > 0;
             
+            // Eingabefelder steuern
             if (isMC) {
-                // MC: Buttons rendern, Textfeld/Submit-Button ausblenden
                 answerInput.style.display = 'none';
                 submitBtn.style.display = 'none';
+                mcContainer.style.display = 'block';
                 
-                // MC-Container einfügen
-                document.getElementById('riddle-content-container').appendChild(mcOptionsContainer);
-                
-                // Optionen rendern
-                const options = riddleData.options ? riddleData.options : ["A", "B", "C", "D"]; // Default Optionen
-                
-                options.forEach((optionText) => {
+                // MC-Buttons generieren
+                const options = shuffleOptions([...riddleData.options], riddleData.answer);
+                options.forEach(optionText => {
                     const button = document.createElement('button');
-                    button.classList.add('mc-option-button');
+                    button.classList.add('mc-button');
                     button.textContent = optionText;
-                    
-                    button.onclick = () => {
-                         const userOptionText = optionText;
-                         const correctAnswerKey = riddleData.correctAnswerKey;
-                         checkMultipleChoiceAnswer(userOptionText, correctAnswerKey, riddleData);
-                    };
-                    mcOptionsContainer.appendChild(button);
+                    button.dataset.answer = cleanAnswer(optionText);
+                    button.onclick = () => checkMcAnswer(button.dataset.answer, targetPosition, revealedLetterCandidate, displayedNumber);
+                    mcContainer.appendChild(button);
                 });
-
             } else {
-                // Text/Bild-Rätsel: Textfeld/Submit-Button anzeigen
+                // Normales Texträtsel
                 answerInput.style.display = 'block';
                 submitBtn.style.display = 'block';
+                mcContainer.style.display = 'none';
             }
 
             // Bild anzeigen, wenn vorhanden
@@ -575,22 +547,13 @@
             }
 
             modal.style.display = 'block';
-            // answerInput.focus() entfernt
         }
 
+        // GEÄNDERT: checkAnswer für Text-Rätsel
         function checkAnswer() {
             if (currentDoorNumber === null || !currentRiddle) return;
             
             const riddleData = currentRiddle;
-            // Wenn es ein MC-Rätsel ist, sollte diese Funktion nicht über den Submit-Button aufgerufen werden.
-            if (riddleData.category === 'MATH_MC' || riddleData.category === 'LOGIC_MC' || riddleData.category === 'COUNTRY') {
-                 feedbackMsg.textContent = 'Bitte wähle eine Option aus den Buttons!';
-                 feedbackMsg.style.color = 'red';
-                 feedbackMsg.style.display = 'block';
-                 return;
-            }
-
-
             const assignment = assignments[currentDoorNumber];
             const targetPosition = assignment.targetPosition; 
             
@@ -609,27 +572,23 @@
             }
         }
         
-        // NEU: Logik für Multiple Choice Button Klick
-        function checkMultipleChoiceAnswer(userOptionText, correctAnswerKey, riddleData) {
-            const assignment = assignments[currentDoorNumber];
-            const targetPosition = assignment.targetPosition; 
-            
-            // Vergleiche die geklickte Option mit dem Schlüsselwort der korrekten Antwort
-            const isCorrect = userOptionText === correctAnswerKey;
+        // NEU: checkMcAnswer für Multiple-Choice-Rätsel
+        function checkMcAnswer(userAnswerClean, targetPosition, revealedLetter) {
+            if (currentRiddle === null) return;
 
-            if (isCorrect) {
-                // Die Antwort für den Letter-Derivation ist das gespeicherte Schlüsselwort in riddleData.answer
-                const revealedLetter = riddleData.answer.toUpperCase().charAt(0);
+            const correctAnswer = cleanAnswer(currentRiddle.answer); 
+
+            if (userAnswerClean === correctAnswer) {
                 processCorrectAnswer(targetPosition, revealedLetter);
             } else {
-                 feedbackMsg.textContent = '❌ Falsche Auswahl. Versuch es nochmal!';
-                 feedbackMsg.style.color = 'red';
-                 feedbackMsg.style.display = 'block';
-                 successMsg.style.display = 'none';
+                feedbackMsg.textContent = 'Falsche Antwort. Versuch es nochmal!';
+                feedbackMsg.style.color = '#c0392b';
+                feedbackMsg.style.display = 'block';
+                successMsg.style.display = 'none';
             }
         }
         
-        // Zentrale Logik zur Verarbeitung einer richtigen Antwort
+        // Zentrale Logik zur Verarbeitung einer richtigen Antwort (UNVERÄNDERT)
         function processCorrectAnswer(targetPosition, revealedLetter) {
             feedbackMsg.style.display = 'none';
             successMsg.style.display = 'block';
@@ -644,7 +603,7 @@
                     doorEl.classList.add('opened');
                 }
                 
-                successMsg.textContent = `✔️ Richtig! Der Buchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet!`;
+                successMsg.textContent = `Richtig! Der Buchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet.`;
                 updateProgressDisplay(); 
             }
             
@@ -652,7 +611,7 @@
         }
 
         
-        // --- 7. EVENT-LISTENER ---
+        // --- 7. EVENT-LISTENER (GEÄNDERT: Fokus auf Textfeld nur wenn sichtbar) ---
         
         closeBtn.onclick = function() {
             modal.style.display = "none";
@@ -664,8 +623,9 @@
             }
         }
         
-        submitBtn.onclick = checkAnswer;
+        submitBtn.onclick = checkAnswer; // Nur für Text-Rätsel relevant
         
+        // ENTER-Taste nur für Text-Rätsel relevant
         answerInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 checkAnswer();
@@ -674,7 +634,7 @@
 
         document.addEventListener('DOMContentLoaded', renderCalendar);
         
-        // --- 8. SCROLL-RESET FUNKTION ---
+        // --- 8. SCROLL-RESET FUNKTION (UNVERÄNDERT) ---
         function resetScrollPosition() {
             window.scrollTo(0, 0);
         }
