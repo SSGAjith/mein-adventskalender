@@ -618,8 +618,7 @@
                 successMsg.textContent = `Richtig! Der Buchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet.`;
                 updateProgressDisplay(); 
             }
-            
-            setTimeout(() => { modal.style.display = 'none'; renderCalendar(); }, 2000); 
+            renderCalendar(); 
         }
 
         
@@ -656,4 +655,5 @@
     </script>
 </body>
 </html>
+
 
