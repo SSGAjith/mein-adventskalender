@@ -105,6 +105,38 @@
             max-width: 500px;
             border-radius: 10px;
             text-align: center;
+            position: relative; /* Wichtig für die Positionierung des X */
+        }
+        
+        /* NEU: Styling für das Schließen-Symbol */
+        .close-button {
+            /* Positionierung oben rechts */
+            position: absolute;
+            top: -15px; /* Etwas aus dem Kasten heraus */
+            right: -15px; /* Etwas aus dem Kasten heraus */
+            
+            /* Design als rotes Quadrat mit weißem X */
+            color: white; /* Farbe des X */
+            background-color: #c0392b; /* Rote Hintergrundfarbe */
+            font-size: 24px;
+            line-height: 20px; 
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px; /* Abgerundete Ecken */
+            width: 30px; /* Breite des Quadrats */
+            height: 30px; /* Höhe des Quadrats */
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Kleiner Schatten */
+            padding: 5px; /* Kleiner Innenabstand */
+            z-index: 101; /* Stellt sicher, dass das X über allem liegt */
+            display: flex; /* Für zentriertes X */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            background-color: #e74c3c; /* Dunklerer Rotton beim Hover */
         }
         
         /* Bild-Container Styling */
@@ -130,13 +162,13 @@
             display: block;
         }
         
-        /* NEU: MC-Buttons Container */
+        /* MC-Buttons Container */
         #multiple-choice-container {
             margin-top: 15px;
-            display: none; /* Standardmäßig versteckt */
+            display: none; 
         }
 
-        /* NEU: MC-Buttons */
+        /* MC-Buttons */
         .mc-button {
             background-color: #3498db; 
             color: white;
@@ -227,7 +259,8 @@
 
     <div id="riddleModal" class="modal">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
+            <span class="close-button">&times;</span> 
+            
             <h2 id="modal-title">Rätsel zu Tür X</h2>
             
             <div id="riddle-content-container">
@@ -251,40 +284,32 @@
 
 
     <script>
-        // --- 1. DATEN UND INITIALISIERUNG (GEÄNDERT) ---
+        // --- 1. DATEN UND INITIALISIERUNG ---
         const DISPLAY_MESSAGE = "LASS UNS KAKAO TRINKEN GEHEN "; 
         const NUM_DOORS = 24;
         const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
-        // GEÄNDERT: IMAGE-Rätsel haben jetzt ein 'options'-Feld
+        // RÄTSEL-DATEN MIT OPTIONS FÜR MC
         const allRiddles = [
             { question: "Was ist groß, wenn es jung ist, und klein, wenn es alt ist?", answer: "kerze" },
-            // GEÄNDERT: Rätsel 2 ist jetzt MC
             { category: "IMAGE", question: "Was siehst du auf diesem Bild? (Lösung ist '0')", imageSrc: "Mathe1.png", answer: "0", options: ["1", "3", "0", "9"] },
             { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc" },
-            // GEÄNDERT: Rätsel 4 ist jetzt MC
             { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.png", answer: "spinatlasagne", options: ["Nudelauflauf", "Spinatlasagne", "Gemüsepfanne", "Pizza"] },
-            // GEÄNDERT: Rätsel 5 ist jetzt MC
             { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn", options: ["Bulgarien", "Iran", "Ungarn", "Italien"] },
             { question: "Was hat viele Nadeln, kann aber nicht nähen?", answer: "tannenbaum" },
             { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Wähle Option B. Gib 'summe' ein.", answer: "summe" },
             { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", answer: "32" },
-            // GEÄNDERT: Rätsel 9 ist jetzt MC
             { category: "IMAGE", question: "Was siehst du auf diesem Bild:", imageSrc: "Apfel.jpg", answer: "apfel", options: ["Orange", "Zitrone", "Birne", "Apfel"] },
-            // GEÄNDERT: Rätsel 10 ist jetzt MC
             { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien", options: ["Serbien", "Kroatien", "Slowakei", "Tschechien"] },
             { question: "Was kann einen Raum füllen, nimmt aber keinen Platz ein?", answer: "licht" },
             { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
             { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Gib die 'T'atsächliche Antwort als Wort ein.", answer: "tatsache" },
             { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
-            // GEÄNDERT: Rätsel 15 ist jetzt MC
             { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.png", answer: "pinguin", options: ["Möwe", "Albatros", "Pinguin", "Pelikan"] },
             { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'Numerisch' ein.", answer: "numerisch" },
             { question: "Was ist immer vor dir, aber du kannst es nicht sehen?", answer: "zukunft" },
-            // GEÄNDERT: Rätsel 18 ist jetzt MC
             { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.png", answer: "england", options: ["Frankreich", "Irland", "Schottland", "England"] },
             { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
-            // GEÄNDERT: Rätsel 20 ist jetzt MC
             { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.png", answer: "eichhörnchen", options: ["Marder", "Ratte", "Eichhörnchen", "Maulwurf"] },
             { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", answer: "eine" },
             { question: "Je mehr davon da ist, desto weniger sieht man. Was ist es?", answer: "dunkelheit" },
@@ -299,7 +324,6 @@
             }
         }
         
-        // --- FUNKTION: ERSTELLT ZUORDNUNGEN (ENTRANDOMISIERT) ---
         function createConstrainedAssignments() {
             const doorAssignments = {};
             for (let i = 1; i <= NUM_DOORS; i++) {
@@ -311,7 +335,6 @@
             return doorAssignments;
         }
 
-        // INITIALISIERUNG DER ZUORDNUNGEN
         let assignments = JSON.parse(localStorage.getItem('assignments'));
         if (!assignments) {
             assignments = createConstrainedAssignments();
@@ -330,10 +353,7 @@
                          .replace(/[^a-z0-9]/g, '');
         }
         
-        // --- 2. DATUMSLOGIK ---
         function canOpenDoor(day) {
-            return true;
-            
             const today = new Date(); 
             const currentMonth = today.getMonth() + 1;
             const currentDay = today.getDate();
@@ -344,7 +364,6 @@
             return day <= currentDay;
         }
 
-        // --- 3. RENDERN KALENDER (UNVERÄNDERT) ---
         function renderCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
@@ -394,7 +413,6 @@
             updateProgressDisplay();
         }
         
-        // --- 4. FORTSCHRITTSANZEIGE LOGIK (UNVERÄNDERT) ---
         function updateProgressDisplay() {
             const progressEl = document.getElementById('progress-display');
             const finalMessageEl = document.getElementById('final-message-text');
@@ -424,15 +442,13 @@
             if (unlockedCount === NUM_DOORS) {
                  finalMessageEl.style.display = 'block';
                  progressEl.style.display = 'none';
-                 finalMessageEl.textContent = DISPLAY_MESSAGE.trim(); // Korrektur der ID
+                 finalMessageEl.textContent = DISPLAY_MESSAGE.trim(); 
             } else {
-                 finalMessageEl.style.display = 'none'; // Korrektur der ID
+                 finalMessageEl.style.display = 'none'; 
                  progressEl.style.display = 'block';
             }
         }
 
-
-        // --- 5. RESET FUNKTION (UNVERÄNDERT) ---
         function resetCalendar() {
             if (confirm('Bist du sicher, dass du den Fortschritt und die Zuordnungen zurücksetzen möchtest?')) {
                 localStorage.removeItem('revealedLetters'); 
@@ -443,8 +459,6 @@
         window.resetCalendar = resetCalendar;
 
 
-        // --- 6. MODAL/SPIEL-LOGIK (GEÄNDERT) ---
-        
         const modal = document.getElementById('riddleModal');
         const closeBtn = document.querySelector('.close-button');
         const submitBtn = document.getElementById('submit-answer');
@@ -453,12 +467,10 @@
         const successMsg = document.getElementById('success-message');
         const riddleImageContainer = document.getElementById('riddle-image-container');
         const riddleImage = document.getElementById('riddle-image');
-        const mcContainer = document.getElementById('multiple-choice-container'); // NEU
+        const mcContainer = document.getElementById('multiple-choice-container');
 
 
-        // NEU: Hilfsfunktion zum Mischen von MC-Optionen
         function shuffleOptions(options, correctAnswer) {
-            // Stellen Sie sicher, dass die korrekte Antwort enthalten ist
             if (!options.map(cleanAnswer).includes(cleanAnswer(correctAnswer))) {
                 options.push(correctAnswer);
             }
@@ -466,7 +478,6 @@
             return options;
         }
         
-        // GEÄNDERT: openDoor mit Logik für MC-Buttons
         function openDoor(currentDoorPosition, displayedNumber) {
             currentDoorNumber = currentDoorPosition; 
 
@@ -493,7 +504,7 @@
             answerInput.value = '';
             feedbackMsg.style.display = 'none';
             successMsg.style.display = 'none';
-            mcContainer.innerHTML = ''; // MC-Buttons leeren
+            mcContainer.innerHTML = ''; 
 
             // 6.1: Wenn Tür bereits geöffnet
             if (isOpened) {
@@ -502,7 +513,7 @@
                 document.getElementById('riddle-text').innerHTML += `<br><strong>${riddleData.question}</strong>`;
                 answerInput.style.display = 'none';
                 submitBtn.style.display = 'none';
-                mcContainer.style.display = 'none'; // MC-Buttons verstecken
+                mcContainer.style.display = 'none'; 
                 riddleImageContainer.style.display = 'none';
                 successMsg.textContent = `Tür ist geöffnet! Der Buchstabe "${currentLetter}" auf Position ${targetPosition} ist sichtbar.`;
                 successMsg.style.display = 'block';
@@ -513,7 +524,8 @@
             // 6.2: Modal-Inhalt dynamisch rendern
             document.getElementById('riddle-text').innerHTML = riddleData.question;
             
-            const isMC = (riddleData.category === "IMAGE" || riddleData.category === "COUNTRY") && riddleData.options && riddleData.options.length > 0;
+            // Logik: MC-Modus, wenn 'options' vorhanden
+            const isMC = riddleData.options && riddleData.options.length > 0;
             
             // Eingabefelder steuern
             if (isMC) {
@@ -528,6 +540,7 @@
                     button.classList.add('mc-button');
                     button.textContent = optionText;
                     button.dataset.answer = cleanAnswer(optionText);
+                    // Den echten Ziel-Buchstaben und die Position übergeben
                     button.onclick = () => checkMcAnswer(button.dataset.answer, targetPosition, revealedLetterCandidate, displayedNumber);
                     mcContainer.appendChild(button);
                 });
@@ -549,7 +562,6 @@
             modal.style.display = 'block';
         }
 
-        // GEÄNDERT: checkAnswer für Text-Rätsel
         function checkAnswer() {
             if (currentDoorNumber === null || !currentRiddle) return;
             
@@ -572,7 +584,6 @@
             }
         }
         
-        // NEU: checkMcAnswer für Multiple-Choice-Rätsel
         function checkMcAnswer(userAnswerClean, targetPosition, revealedLetter) {
             if (currentRiddle === null) return;
 
@@ -588,7 +599,6 @@
             }
         }
         
-        // Zentrale Logik zur Verarbeitung einer richtigen Antwort (UNVERÄNDERT)
         function processCorrectAnswer(targetPosition, revealedLetter) {
             feedbackMsg.style.display = 'none';
             successMsg.style.display = 'block';
@@ -611,21 +621,23 @@
         }
 
         
-        // --- 7. EVENT-LISTENER (GEÄNDERT: Fokus auf Textfeld nur wenn sichtbar) ---
+        // --- 7. EVENT-LISTENER (WICHTIGE ÄNDERUNG HIER) ---
         
+        // *WICHTIG*: Nur das Schließen-Symbol schließt das Modal
         closeBtn.onclick = function() {
             modal.style.display = "none";
         }
 
-        window.onclick = function(event) {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        }
+        /* * ENTFERNT: Die folgende Funktion hat den Bug verursacht und wurde gelöscht:
+        * window.onclick = function(event) {
+        * if (event.target === modal) {
+        * modal.style.display = "none";
+        * }
+        * }
+        */
         
-        submitBtn.onclick = checkAnswer; // Nur für Text-Rätsel relevant
+        submitBtn.onclick = checkAnswer; 
         
-        // ENTER-Taste nur für Text-Rätsel relevant
         answerInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 checkAnswer();
@@ -634,7 +646,7 @@
 
         document.addEventListener('DOMContentLoaded', renderCalendar);
         
-        // --- 8. SCROLL-RESET FUNKTION (UNVERÄNDERT) ---
+        // --- 8. SCROLL-RESET FUNKTION ---
         function resetScrollPosition() {
             window.scrollTo(0, 0);
         }
