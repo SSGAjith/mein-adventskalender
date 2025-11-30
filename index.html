@@ -1,659 +1,663 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"> 
-    <title>Adventskalender für Luisa</title>
-    <style>
-        /* --- 1. Layout & Responsive Design --- */
-        body {
-            font-family: sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden; 
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"> 
+    <title>Adventskalender für Luisa</title>
+    <style>
+        /* --- 1. Layout & Responsive Design --- */
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden; 
+        }
 
-        h1 {
-            color: #c0392b;
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 6vw; 
-            white-space: nowrap; 
-            padding: 0 5px; 
-            box-sizing: border-box;
-        }
+        h1 {
+            color: #c0392b;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 6vw; 
+            white-space: nowrap; 
+            padding: 0 5px; 
+            box-sizing: border-box;
+        }
 
-        #calendar {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            max-width: 1000px;
-            width: 100%;
-        }
+        #calendar {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            max-width: 1000px;
+            width: 100%;
+        }
 
-        @media (max-width: 600px) {
-            #calendar {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 10px;
-            }
-            h1 {
-                font-size: 7vw; 
-            }
-        }
+        @media (max-width: 600px) {
+            #calendar {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            h1 {
+                font-size: 7vw; 
+            }
+        }
 
-        /* --- 2. Tür-Stile (Unverändert) --- */
-        .door {
-            background-color: #27ae60;
-            border: 4px solid #c0392b;
-            border-radius: 10px;
-            aspect-ratio: 1 / 1;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+        /* --- 2. Tür-Stile (Unverändert) --- */
+        .door {
+            background-color: #27ae60;
+            border: 4px solid #c0392b;
+            border-radius: 10px;
+            aspect-ratio: 1 / 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-        .door:hover:not(.locked) {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
-        }
+        .door:hover:not(.locked) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
 
-        .door-number {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.5em;
-            font-weight: bold;
-            color: white;
-            z-index: 2;
-        }
+        .door-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+            font-weight: bold;
+            color: white;
+            z-index: 2;
+        }
 
-        .door.locked {
-            background-color: #95a5a6;
-            cursor: default;
-            opacity: 0.7;
-        }
-        
-        .door.opened {
-            background-color: #e67e22;
-        }
-        
-        /* --- 3. Modal und Eingabe --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            overflow-y: auto;
-        }
+        .door.locked {
+            background-color: #95a5a6;
+            cursor: default;
+            opacity: 0.7;
+        }
+        
+        .door.opened {
+            background-color: #e67e22;
+        }
+        
+        /* --- 3. Modal und Eingabe --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+        }
 
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto;
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 10px;
-            text-align: center;
-            position: relative; /* Wichtig für die Positionierung des X */
-        }
-        
-        /* NEU: Styling für das Schließen-Symbol */
-        .close-button {
-            /* Positionierung oben rechts */
-            position: absolute;
-            top: -15px; /* Etwas aus dem Kasten heraus */
-            right: -15px; /* Etwas aus dem Kasten heraus */
-            
-            /* Design als rotes Quadrat mit weißem X */
-            color: white; /* Farbe des X */
-            background-color: #c0392b; /* Rote Hintergrundfarbe */
-            font-size: 24px;
-            line-height: 20px; 
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 5px; /* Abgerundete Ecken */
-            width: 30px; /* Breite des Quadrats */
-            height: 30px; /* Höhe des Quadrats */
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Kleiner Schatten */
-            padding: 5px; /* Kleiner Innenabstand */
-            z-index: 101; /* Stellt sicher, dass das X über allem liegt */
-            display: flex; /* Für zentriertes X */
-            justify-content: center;
-            align-items: center;
-        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative; /* Wichtig für die Positionierung des X */
+        }
+        
+        /* NEU: Styling für das Schließen-Symbol */
+        .close-button {
+            /* Positionierung oben rechts */
+            position: absolute;
+            top: -15px; /* Etwas aus dem Kasten heraus */
+            right: -15px; /* Etwas aus dem Kasten heraus */
+            
+            /* Design als rotes Quadrat mit weißem X */
+            color: white; /* Farbe des X */
+            background-color: #c0392b; /* Rote Hintergrundfarbe */
+            font-size: 24px;
+            line-height: 20px; 
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px; /* Abgerundete Ecken */
+            width: 30px; /* Breite des Quadrats */
+            height: 30px; /* Höhe des Quadrats */
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Kleiner Schatten */
+            padding: 5px; /* Kleiner Innenabstand */
+            z-index: 101; /* Stellt sicher, dass das X über allem liegt */
+            display: flex; /* Für zentriertes X */
+            justify-content: center;
+            align-items: center;
+        }
 
-        .close-button:hover,
-        .close-button:focus {
-            background-color: #e74c3c; /* Dunklerer Rotton beim Hover */
-        }
-        
-        /* Bild-Container Styling */
-        #riddle-image-container {
-            margin: 15px 0;
-            display: none;
-        }
-        #riddle-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 5px;
-            border: 2px solid #c0392b;
-        }
+        .close-button:hover,
+        .close-button:focus {
+            background-color: #e74c3c; /* Dunklerer Rotton beim Hover */
+        }
+        
+        /* Bild-Container Styling */
+        #riddle-image-container {
+            margin: 15px 0;
+            display: none;
+        }
+        #riddle-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            border: 2px solid #c0392b;
+        }
 
-        .riddle-input {
-            padding: 10px;
-            margin: 15px auto; 
-            width: 80%;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px; 
-            -webkit-text-size-adjust: 100%; 
-            display: block;
-        }
-        
-        /* MC-Buttons Container */
-        #multiple-choice-container {
-            margin-top: 15px;
-            display: none; 
-        }
+        .riddle-input {
+            padding: 10px;
+            margin: 15px auto; 
+            width: 80%;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px; 
+            -webkit-text-size-adjust: 100%; 
+            display: block;
+        }
+        
+        /* MC-Buttons Container */
+        #multiple-choice-container {
+            margin-top: 15px;
+            display: none; 
+        }
 
-        /* MC-Buttons */
-        .mc-button {
-            background-color: #3498db; 
-            color: white;
-            padding: 10px 15px;
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.1s;
-            width: 100%; 
-            max-width: 200px; 
-            display: inline-block; 
-        }
+        /* MC-Buttons */
+        .mc-button {
+            background-color: #3498db; 
+            color: white;
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.1s;
+            width: 100%; 
+            max-width: 200px; 
+            display: inline-block; 
+        }
 
-        .mc-button:hover {
-            background-color: #2980b9;
-        }
-        
-        .riddle-button {
-            background-color: #c0392b;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        
-        /* --- 4. Fortschrittsanzeige --- */
-        #progress-display-container {
-            margin-top: 30px;
-            padding: 10px; 
-            background-color: #ecf0f1;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 800px;
-            text-align: center;
-        }
-        
-        #progress-display {
-            font-family: monospace;
-            font-size: 2em;
-            letter-spacing: 0.1em;
-            color: #c0392b;
-            font-weight: bold;
-            display: flex; 
-            flex-wrap: wrap; 
-            justify-content: center;
-            line-height: 1.5; 
-            padding: 10px 0;
-            white-space: pre-wrap; 
-        }
+        .mc-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .riddle-button {
+            background-color: #c0392b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        /* --- 4. Fortschrittsanzeige --- */
+        #progress-display-container {
+            margin-top: 30px;
+            padding: 10px; 
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        #progress-display {
+            font-family: monospace;
+            font-size: 2em;
+            letter-spacing: 0.1em;
+            color: #c0392b;
+            font-weight: bold;
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center;
+            line-height: 1.5; 
+            padding: 10px 0;
+            white-space: pre-wrap; 
+        }
 
-        #final-message-text {
-            color: #27ae60;
-            font-size: 1.5em;
-            margin-top: 10px;
-            font-weight: bold;
-            display: none;
-        }
+        #final-message-text {
+            color: #27ae60;
+            font-size: 1.5em;
+            margin-top: 10px;
+            font-weight: bold;
+            display: none;
+        }
 
-        #reset-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-    </style>
+        #reset-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>✨ Adventskalender für Luisa ✨</h1> 
+    <h1>✨ Adventskalender für Luisa ✨</h1> 
 
-    <div id="calendar">
-    </div>
-    
-    <div id="progress-display-container">
-        <div id="progress-display"></div> 
-        <div id="final-message-text">LASS UNS KAKAO TRINKEN GEHEN</div>
-    </div>
-    <button id="reset-button" onclick="resetCalendar()">Fortschritt zurücksetzen</button>
-
-
-    <div id="riddleModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span> 
-            
-            <h2 id="modal-title">Rätsel zu Tür X</h2>
-            
-            <div id="riddle-content-container">
-                <p id="riddle-text">Rätselfrage...</p>
-                
-                <div id="riddle-image-container">
-                    <img id="riddle-image" src="" alt="Rätselbild">
-                </div>
-                
-                <div id="multiple-choice-container">
-                    </div>
-                
-                <input type="text" id="riddle-answer" class="riddle-input" placeholder="Deine Antwort eingeben...">
-            </div>
-            
-            <button id="submit-answer" class="riddle-button">Antwort prüfen</button>
-            <p id="feedback-message" style="margin-top: 10px; font-weight: bold;"></p>
-            <p id="success-message" style="margin-top: 10px; color: #27ae60; font-weight: bold; display: none;">Richtig! Tür geöffnet!</p>
-        </div>
-    </div>
+    <div id="calendar">
+    </div>
+    
+    <div id="progress-display-container">
+        <div id="progress-display"></div> 
+        <div id="final-message-text">LASS UNS KAKAO TRINKEN GEHEN</div>
+    </div>
+    <button id="reset-button" onclick="resetCalendar()">Fortschritt zurücksetzen</button>
 
 
-    <script>
-        // --- 1. DATEN UND INITIALISIERUNG ---
-        const DISPLAY_MESSAGE = "LASS UNS KAKAO TRINKEN GEHEN "; 
-        const NUM_DOORS = 24;
-        const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
-
-        // RÄTSEL-DATEN MIT OPTIONS FÜR MC
-        const allRiddles = [
-            { question: "Was ist groß, wenn es jung ist, und klein, wenn es alt ist?", answer: "kerze" },
-            { category: "IMAGE", question: "Was siehst du auf diesem Bild? (Lösung ist '0')", imageSrc: "Mathe1.png", answer: "0", options: ["1", "3", "0", "9"] },
-            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc" },
-            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.png", answer: "spinatlasagne", options: ["Nudelauflauf", "Spinatlasagne", "Gemüsepfanne", "Pizza"] },
-            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn", options: ["Bulgarien", "Iran", "Ungarn", "Italien"] },
-            { question: "Was hat viele Nadeln, kann aber nicht nähen?", answer: "tannenbaum" },
-            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Wähle Option B. Gib 'summe' ein.", answer: "summe" },
-            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", answer: "32" },
-            { category: "IMAGE", question: "Was siehst du auf diesem Bild:", imageSrc: "Apfel.jpg", answer: "apfel", options: ["Orange", "Zitrone", "Birne", "Apfel"] },
-            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien", options: ["Serbien", "Kroatien", "Slowakei", "Tschechien"] },
-            { question: "Was kann einen Raum füllen, nimmt aber keinen Platz ein?", answer: "licht" },
-            { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort" },
-            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Gib die 'T'atsächliche Antwort als Wort ein.", answer: "tatsache" },
-            { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm" },
-            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.png", answer: "pinguin", options: ["Möwe", "Albatros", "Pinguin", "Pelikan"] },
-            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'Numerisch' ein.", answer: "numerisch" },
-            { question: "Was ist immer vor dir, aber du kannst es nicht sehen?", answer: "zukunft" },
-            { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.png", answer: "england", options: ["Frankreich", "Irland", "Schottland", "England"] },
-            { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun" },
-            { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.png", answer: "eichhörnchen", options: ["Marder", "Ratte", "Eichhörnchen", "Maulwurf"] },
-            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", answer: "eine" },
-            { question: "Je mehr davon da ist, desto weniger sieht man. Was ist es?", answer: "dunkelheit" },
-            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis" },
-            { question: "Was kann man brechen ohne es anzufassen oder zu sehen", answer: "versprechen" } 
-        ];
-        
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-        
-        function createConstrainedAssignments() {
-            const doorAssignments = {};
-            for (let i = 1; i <= NUM_DOORS; i++) {
-                doorAssignments[i] = { 
-                    riddleIndex: i - 1, 
-                    targetPosition: i  
-                };
-            }
-            return doorAssignments;
-        }
-
-        let assignments = JSON.parse(localStorage.getItem('assignments'));
-        if (!assignments) {
-            assignments = createConstrainedAssignments();
-            localStorage.setItem('assignments', JSON.stringify(assignments));
-        }
-
-        let revealedLetters = JSON.parse(localStorage.getItem('revealedLetters')) || {}; 
-        let currentDoorNumber = null;
-        let currentRiddle = null;
+    <div id="riddleModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span> 
+            
+            <h2 id="modal-title">Rätsel zu Tür X</h2>
+            
+            <div id="riddle-content-container">
+                <p id="riddle-text">Rätselfrage...</p>
+                
+                <div id="riddle-image-container">
+                    <img id="riddle-image" src="" alt="Rätselbild">
+                </div>
+                
+                <div id="multiple-choice-container">
+                    </div>
+                
+                <input type="text" id="riddle-answer" class="riddle-input" placeholder="Deine Antwort eingeben...">
+            </div>
+            
+            <button id="submit-answer" class="riddle-button">Antwort prüfen</button>
+            <p id="feedback-message" style="margin-top: 10px; font-weight: bold;"></p>
+            <p id="success-message" style="margin-top: 10px; color: #27ae60; font-weight: bold; display: none;">Richtig! Tür geöffnet!</p>
+        </div>
+    </div>
 
 
-        function cleanAnswer(answer) {
-            if (!answer) return "";
-            return answer.toLowerCase()
-                         .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
-                         .replace(/[^a-z0-9]/g, '');
-        }
-        
-        function canOpenDoor(day) {
+    <script>
+        // --- 1. DATEN UND INITIALISIERUNG ---
+        const DISPLAY_MESSAGE = "LASS UNS KAKAO TRINKEN GEHEN "; 
+        const NUM_DOORS = 24;
+        const TARGET_LETTERS = "LASSUNSKAKAOTRINKENGEHEN"; 
 
-            return true;
-            const today = new Date(); 
-            const currentMonth = today.getMonth() + 1;
-            const currentDay = today.getDate();
-            
-            if (currentMonth !== 12) {
-                return false;
-            }
-            return day <= currentDay;
-        }
+        // RÄTSEL-DATEN MIT OPTIONS FÜR MC
+        const allRiddles = [
+            // NEU: 'targetLetter' hinzugefügt, um den korrekten Buchstaben aus TARGET_LETTERS freizuschalten.
+            { question: "Was ist groß, wenn es jung ist, und klein, wenn es alt ist?", answer: "kerze", targetLetter: "L" },
+            { category: "IMAGE", question: "Was siehst du auf diesem Bild? (Lösung ist '0')", imageSrc: "Mathe1.png", answer: "0", options: ["1", "3", "0", "9"], targetLetter: "A" },
+            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz? [BILD: Würfelnetz] - Gib das Wort 'symbolc' ein.", answer: "symbolc", targetLetter: "S" },
+            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.png", answer: "spinatlasagne", options: ["Nudelauflauf", "Spinatlasagne", "Gemüsepfanne", "Pizza"], targetLetter: "S" },
+            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn", options: ["Bulgarien", "Iran", "Ungarn", "Italien"], targetLetter: "U" },
+            { question: "Was hat viele Nadeln, kann aber nicht nähen?", answer: "tannenbaum", targetLetter: "N" },
+            { category: "MATH_MC", question: "Löse: $2x + 5 = 11$. (A) $x=2$, (B) $x=3$, (C) $x=4$. Wähle Option B. Gib 'summe' ein.", answer: "summe", targetLetter: "S" },
+            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", answer: "32", targetLetter: "K" },
+            { category: "IMAGE", question: "Was siehst du auf diesem Bild:", imageSrc: "Apfel.jpg", answer: "apfel", options: ["Orange", "Zitrone", "Birne", "Apfel"], targetLetter: "A" },
+            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien", options: ["Serbien", "Kroatien", "Slowakei", "Tschechien"], targetLetter: "K" },
+            { question: "Was kann einen Raum füllen, nimmt aber keinen Platz ein?", answer: "licht", targetLetter: "A" },
+            { question: "Ich bin immer vor dir, aber du kannst mich nicht sehen. Was bin ich?", answer: "ort", targetLetter: "O" },
+            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig? (A) 0, (B) 3, (C) 5. Gib die 'T'atsächliche Antwort als Wort ein.", answer: "tatsache", targetLetter: "T" },
+            { category: "SEARCH", question: "Finde das versteckte Wort in diesem Rätseltext: 'Suche hier den **R**egenschirm zum Erfolg.'", answer: "regenschirm", targetLetter: "R" },
+            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.png", answer: "pinguin", options: ["Möwe", "Albatros", "Pinguin", "Pelikan"], targetLetter: "I" },
+            { category: "MATH_MC", question: "Lösung von $\log_2(8)$? (A) 2, (B) 3, (C) 4. Wähle Option B. Gib 'Numerisch' ein.", answer: "numerisch", targetLetter: "N" },
+            { question: "Was ist immer vor dir, aber du kannst es nicht sehen?", answer: "zukunft", targetLetter: "K" },
+            { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.png", answer: "england", options: ["Frankreich", "Irland", "Schottland", "England"], targetLetter: "E" },
+            { category: "SEARCH", question: "Zähle die Buchstaben in dem Wort, das mit 'N' beginnt, in diesem Satz: 'Hier ist die **N**ummer versteckt.'", answer: "neun", targetLetter: "N" },
+            { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.png", answer: "eichhörnchen", options: ["Marder", "Ratte", "Eichhörnchen", "Maulwurf"], targetLetter: "G" },
+            { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es? Wähle Option A. Gib 'eine' ein.", answer: "eine", targetLetter: "E" },
+            { question: "Je mehr davon da ist, desto weniger sieht man. Was ist es?", answer: "dunkelheit", targetLetter: "H" },
+            { category: "MATH_MC", question: "Wie lautet die Ableitung von $f(x) = e^{3x}$? (A) $e^{3x}$, (B) $3e^{3x}$, (C) $e^{3x}/3$. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis", targetLetter: "E" },
+            { question: "Was kann man brechen ohne es anzufassen oder zu sehen", answer: "versprechen", targetLetter: "N" } 
+        ];
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function createConstrainedAssignments() {
+            const doorAssignments = {};
+            for (let i = 1; i <= NUM_DOORS; i++) {
+                doorAssignments[i] = { 
+                    riddleIndex: i - 1, 
+                    targetPosition: i  
+                };
+            }
+            return doorAssignments;
+        }
 
-        function renderCalendar() {
-            const calendarEl = document.getElementById('calendar');
-            calendarEl.innerHTML = '';
+        let assignments = JSON.parse(localStorage.getItem('assignments'));
+        if (!assignments) {
+            assignments = createConstrainedAssignments();
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+        }
 
-            const fixedDoorOrder = [
-                2, 21, 19, 3, 15, 23, 
-                17, 7, 14, 10, 12, 20, 
-                24, 16, 6, 18, 13, 11, 
-                8, 1, 5, 4, 22, 9
-            ]; 
-
-            for (let i = 1; i <= NUM_DOORS; i++) {
-                const displayedNumber = fixedDoorOrder[i - 1]; 
-                const currentDoorPosition = i; 
-
-                const doorEl = document.createElement('div');
-                doorEl.classList.add('door');
-                doorEl.dataset.day = currentDoorPosition; 
-
-                const numberEl = document.createElement('div');
-                numberEl.classList.add('door-number');
-                numberEl.textContent = displayedNumber; 
-                doorEl.appendChild(numberEl);
-
-                const assignment = assignments[currentDoorPosition];
-                if (!assignment) {
-                    continue;
-                }
-                
-                const targetPosition = assignment.targetPosition;
-                const isOpened = !!revealedLetters[targetPosition];
-                
-                if (isOpened) {
-                    doorEl.classList.add('opened');
-                }
-                
-                if (!canOpenDoor(displayedNumber) && !isOpened) {
-                    doorEl.classList.add('locked');
-                    doorEl.onclick = () => alert(`Du kannst Tür ${displayedNumber} erst ab dem ${displayedNumber}. Dezember öffnen!`);
-                } else {
-                    doorEl.onclick = () => openDoor(currentDoorPosition, displayedNumber);
-                }
-
-                calendarEl.appendChild(doorEl);
-            }
-            
-            updateProgressDisplay();
-        }
-        
-        function updateProgressDisplay() {
-            const progressEl = document.getElementById('progress-display');
-            const finalMessageEl = document.getElementById('final-message-text');
-            
-            let progressString = '';
-            let letterCounter = 1; 
-
-            for (let i = 0; i < DISPLAY_MESSAGE.length; i++) {
-                const char = DISPLAY_MESSAGE[i];
-                
-                if (char === ' ') {
-                    progressString += ' ';
-                } else {
-                    if (letterCounter <= NUM_DOORS && revealedLetters[letterCounter]) {
-                        progressString += revealedLetters[letterCounter];
-                    } else {
-                        progressString += '_';
-                    }
-                    letterCounter++; 
-                }
-            }
-            
-            progressEl.textContent = progressString;
-            
-            const unlockedCount = Object.keys(revealedLetters).length;
-            
-            if (unlockedCount === NUM_DOORS) {
-                 finalMessageEl.style.display = 'block';
-                 progressEl.style.display = 'none';
-                 finalMessageEl.textContent = DISPLAY_MESSAGE.trim(); 
-            } else {
-                 finalMessageEl.style.display = 'none'; 
-                 progressEl.style.display = 'block';
-            }
-        }
-
-        function resetCalendar() {
-            if (confirm('Bist du sicher, dass du den Fortschritt und die Zuordnungen zurücksetzen möchtest?')) {
-                localStorage.removeItem('revealedLetters'); 
-                localStorage.removeItem('assignments'); 
-                window.location.reload(); 
-            }
-        }
-        window.resetCalendar = resetCalendar;
+        let revealedLetters = JSON.parse(localStorage.getItem('revealedLetters')) || {}; 
+        let currentDoorNumber = null;
+        let currentRiddle = null;
 
 
-        const modal = document.getElementById('riddleModal');
-        const closeBtn = document.querySelector('.close-button');
-        const submitBtn = document.getElementById('submit-answer');
-        const answerInput = document.getElementById('riddle-answer');
-        const feedbackMsg = document.getElementById('feedback-message');
-        const successMsg = document.getElementById('success-message');
-        const riddleImageContainer = document.getElementById('riddle-image-container');
-        const riddleImage = document.getElementById('riddle-image');
-        const mcContainer = document.getElementById('multiple-choice-container');
+        function cleanAnswer(answer) {
+            if (!answer) return "";
+            return answer.toLowerCase()
+                         .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+                         .replace(/[^a-z0-9]/g, '');
+        }
+        
+        function canOpenDoor(day) {
+
+            return true;
+            const today = new Date(); 
+            const currentMonth = today.getMonth() + 1;
+            const currentDay = today.getDate();
+            
+            if (currentMonth !== 12) {
+                return false;
+            }
+            return day <= currentDay;
+        }
+
+        function renderCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            calendarEl.innerHTML = '';
+
+            const fixedDoorOrder = [
+                2, 21, 19, 3, 15, 23, 
+                17, 7, 14, 10, 12, 20, 
+                24, 16, 6, 18, 13, 11, 
+                8, 1, 5, 4, 22, 9
+            ]; 
+
+            for (let i = 1; i <= NUM_DOORS; i++) {
+                const displayedNumber = fixedDoorOrder[i - 1]; 
+                const currentDoorPosition = i; 
+
+                const doorEl = document.createElement('div');
+                doorEl.classList.add('door');
+                doorEl.dataset.day = currentDoorPosition; 
+
+                const numberEl = document.createElement('div');
+                numberEl.classList.add('door-number');
+                numberEl.textContent = displayedNumber; 
+                doorEl.appendChild(numberEl);
+
+                const assignment = assignments[currentDoorPosition];
+                if (!assignment) {
+                    continue;
+                }
+                
+                const targetPosition = assignment.targetPosition;
+                const isOpened = !!revealedLetters[targetPosition];
+                
+                if (isOpened) {
+                    doorEl.classList.add('opened');
+                }
+                
+                if (!canOpenDoor(displayedNumber) && !isOpened) {
+                    doorEl.classList.add('locked');
+                    doorEl.onclick = () => alert(`Du kannst Tür ${displayedNumber} erst ab dem ${displayedNumber}. Dezember öffnen!`);
+                } else {
+                    doorEl.onclick = () => openDoor(currentDoorPosition, displayedNumber);
+                }
+
+                calendarEl.appendChild(doorEl);
+            }
+            
+            updateProgressDisplay();
+        }
+        
+        function updateProgressDisplay() {
+            const progressEl = document.getElementById('progress-display');
+            const finalMessageEl = document.getElementById('final-message-text');
+            
+            let progressString = '';
+            let letterCounter = 1; 
+
+            for (let i = 0; i < DISPLAY_MESSAGE.length; i++) {
+                const char = DISPLAY_MESSAGE[i];
+                
+                if (char === ' ') {
+                    progressString += ' ';
+                } else {
+                    if (letterCounter <= NUM_DOORS && revealedLetters[letterCounter]) {
+                        progressString += revealedLetters[letterCounter];
+                    } else {
+                        progressString += '_';
+                    }
+                    letterCounter++; 
+                }
+            }
+            
+            progressEl.textContent = progressString;
+            
+            const unlockedCount = Object.keys(revealedLetters).length;
+            
+            if (unlockedCount === NUM_DOORS) {
+                 finalMessageEl.style.display = 'block';
+                 progressEl.style.display = 'none';
+                 finalMessageEl.textContent = DISPLAY_MESSAGE.trim(); 
+            } else {
+                 finalMessageEl.style.display = 'none'; 
+                 progressEl.style.display = 'block';
+            }
+        }
+
+        function resetCalendar() {
+            if (confirm('Bist du sicher, dass du den Fortschritt und die Zuordnungen zurücksetzen möchtest?')) {
+                localStorage.removeItem('revealedLetters'); 
+                localStorage.removeItem('assignments'); 
+                window.location.reload(); 
+            }
+        }
+        window.resetCalendar = resetCalendar;
 
 
-        function shuffleOptions(options, correctAnswer) {
-            if (!options.map(cleanAnswer).includes(cleanAnswer(correctAnswer))) {
-                options.push(correctAnswer);
-            }
-            shuffleArray(options);
-            return options;
-        }
-        
-        function openDoor(currentDoorPosition, displayedNumber) {
-            currentDoorNumber = currentDoorPosition; 
+        const modal = document.getElementById('riddleModal');
+        const closeBtn = document.querySelector('.close-button');
+        const submitBtn = document.getElementById('submit-answer');
+        const answerInput = document.getElementById('riddle-answer');
+        const feedbackMsg = document.getElementById('feedback-message');
+        const successMsg = document.getElementById('success-message');
+        const riddleImageContainer = document.getElementById('riddle-image-container');
+        const riddleImage = document.getElementById('riddle-image');
+        const mcContainer = document.getElementById('multiple-choice-container');
 
-            const assignment = assignments[currentDoorPosition]; 
-            if (!assignment) {
-                 return;
-            }
-            
-            currentRiddle = allRiddles[assignment.riddleIndex]; 
-            const riddleData = currentRiddle;
 
-            const targetPosition = assignment.targetPosition; 
-            const revealedLetterCandidate = riddleData.answer.toUpperCase().charAt(0);
+        function shuffleOptions(options, correctAnswer) {
+            if (!options.map(cleanAnswer).includes(cleanAnswer(correctAnswer))) {
+                options.push(correctAnswer);
+            }
+            shuffleArray(options);
+            return options;
+        }
+        
+        function openDoor(currentDoorPosition, displayedNumber) {
+            currentDoorNumber = currentDoorPosition; 
 
-            const isOpened = !!revealedLetters[targetPosition]; 
-            const currentLetter = isOpened ? revealedLetters[targetPosition] : revealedLetterCandidate;
+            const assignment = assignments[currentDoorPosition]; 
+            if (!assignment) {
+                 return;
+            }
+            
+            currentRiddle = allRiddles[assignment.riddleIndex]; 
+            const riddleData = currentRiddle;
 
-            if (!riddleData) {
-                return;
-            }
-            
-            // Modal vorbereiten und öffnen
-            document.getElementById('modal-title').textContent = `Rätsel zu Tür ${displayedNumber}`; 
-            answerInput.value = '';
-            feedbackMsg.style.display = 'none';
-            successMsg.style.display = 'none';
-            mcContainer.innerHTML = ''; 
+            const targetPosition = assignment.targetPosition; 
+            
+            // !!! KORREKTUR: Jetzt wird der explizite 'targetLetter' verwendet.
+            const revealedLetterCandidate = riddleData.targetLetter || riddleData.answer.toUpperCase().charAt(0);
 
-            // 6.1: Wenn Tür bereits geöffnet
-            if (isOpened) {
-                document.getElementById('modal-title').textContent = `Tür ${displayedNumber} (Löst Position ${targetPosition} mit Buchstabe "${currentLetter}")`;
-                document.getElementById('riddle-text').innerHTML = "Du hast dieses Rätsel bereits gelöst. Hier ist nochmal die Frage:";
-                document.getElementById('riddle-text').innerHTML += `<br><strong>${riddleData.question}</strong>`;
-                answerInput.style.display = 'none';
-                submitBtn.style.display = 'none';
-                mcContainer.style.display = 'none'; 
-                riddleImageContainer.style.display = 'none';
-                successMsg.textContent = `Tür ist geöffnet! Der Buchstabe "${currentLetter}" auf Position ${targetPosition} ist sichtbar.`;
-                successMsg.style.display = 'block';
-                modal.style.display = 'block';
-                return;
-            }
-            
-            // 6.2: Modal-Inhalt dynamisch rendern
-            document.getElementById('riddle-text').innerHTML = riddleData.question;
-            
-            // Logik: MC-Modus, wenn 'options' vorhanden
-            const isMC = riddleData.options && riddleData.options.length > 0;
-            
-            // Eingabefelder steuern
-            if (isMC) {
-                answerInput.style.display = 'none';
-                submitBtn.style.display = 'none';
-                mcContainer.style.display = 'block';
-                
-                // MC-Buttons generieren
-                const options = shuffleOptions([...riddleData.options], riddleData.answer);
-                options.forEach(optionText => {
-                    const button = document.createElement('button');
-                    button.classList.add('mc-button');
-                    button.textContent = optionText;
-                    button.dataset.answer = cleanAnswer(optionText);
-                    // Den echten Ziel-Buchstaben und die Position übergeben
-                    button.onclick = () => checkMcAnswer(button.dataset.answer, targetPosition, revealedLetterCandidate, displayedNumber);
-                    mcContainer.appendChild(button);
-                });
-            } else {
-                // Normales Texträtsel
-                answerInput.style.display = 'block';
-                submitBtn.style.display = 'block';
-                mcContainer.style.display = 'none';
-            }
+            const isOpened = !!revealedLetters[targetPosition]; 
+            const currentLetter = isOpened ? revealedLetters[targetPosition] : revealedLetterCandidate;
 
-            // Bild anzeigen, wenn vorhanden
-            if (riddleData.imageSrc) {
-                riddleImage.src = riddleData.imageSrc;
-                riddleImageContainer.style.display = 'block';
-            } else {
-                riddleImageContainer.style.display = 'none';
-            }
+            if (!riddleData) {
+                return;
+            }
+            
+            // Modal vorbereiten und öffnen
+            document.getElementById('modal-title').textContent = `Rätsel zu Tür ${displayedNumber}`; 
+            answerInput.value = '';
+            feedbackMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            mcContainer.innerHTML = ''; 
 
-            modal.style.display = 'block';
-        }
+            // 6.1: Wenn Tür bereits geöffnet
+            if (isOpened) {
+                document.getElementById('modal-title').textContent = `Tür ${displayedNumber} (Löst Position ${targetPosition} mit Buchstabe "${currentLetter}")`;
+                document.getElementById('riddle-text').innerHTML = "Du hast dieses Rätsel bereits gelöst. Hier ist nochmal die Frage:";
+                document.getElementById('riddle-text').innerHTML += `<br><strong>${riddleData.question}</strong>`;
+                answerInput.style.display = 'none';
+                submitBtn.style.display = 'none';
+                mcContainer.style.display = 'none'; 
+                riddleImageContainer.style.display = 'none';
+                successMsg.textContent = `Tür ist geöffnet! Der Buchstabe "${currentLetter}" auf Position ${targetPosition} ist sichtbar.`;
+                successMsg.style.display = 'block';
+                modal.style.display = 'block';
+                return;
+            }
+            
+            // 6.2: Modal-Inhalt dynamisch rendern
+            document.getElementById('riddle-text').innerHTML = riddleData.question;
+            
+            // Logik: MC-Modus, wenn 'options' vorhanden
+            const isMC = riddleData.options && riddleData.options.length > 0;
+            
+            // Eingabefelder steuern
+            if (isMC) {
+                answerInput.style.display = 'none';
+                submitBtn.style.display = 'none';
+                mcContainer.style.display = 'block';
+                
+                // MC-Buttons generieren
+                const options = shuffleOptions([...riddleData.options], riddleData.answer);
+                options.forEach(optionText => {
+                    const button = document.createElement('button');
+                    button.classList.add('mc-button');
+                    button.textContent = optionText;
+                    button.dataset.answer = cleanAnswer(optionText);
+                    // Den echten Ziel-Buchstaben und die Position übergeben
+                    button.onclick = () => checkMcAnswer(button.dataset.answer, targetPosition, revealedLetterCandidate, displayedNumber);
+                    mcContainer.appendChild(button);
+                });
+            } else {
+                // Normales Texträtsel
+                answerInput.style.display = 'block';
+                submitBtn.style.display = 'block';
+                mcContainer.style.display = 'none';
+            }
 
-        function checkAnswer() {
-            if (currentDoorNumber === null || !currentRiddle) return;
-            
-            const riddleData = currentRiddle;
-            const assignment = assignments[currentDoorNumber];
-            const targetPosition = assignment.targetPosition; 
-            
-            const userAnswer = cleanAnswer(answerInput.value);
-            const correctAnswer = cleanAnswer(riddleData.answer); 
-            
-            const revealedLetter = riddleData.answer.toUpperCase().charAt(0);
+            // Bild anzeigen, wenn vorhanden
+            if (riddleData.imageSrc) {
+                riddleImage.src = riddleData.imageSrc;
+                riddleImageContainer.style.display = 'block';
+            } else {
+                riddleImageContainer.style.display = 'none';
+            }
 
-            if (userAnswer === correctAnswer) {
-                processCorrectAnswer(targetPosition, revealedLetter);
-            } else {
-                feedbackMsg.textContent = 'Falsche Antwort. Versuch es nochmal!';
-                feedbackMsg.style.color = '#c0392b';
-                feedbackMsg.style.display = 'block';
-                successMsg.style.display = 'none';
-            }
-        }
-        
-        function checkMcAnswer(userAnswerClean, targetPosition, revealedLetter) {
-            if (currentRiddle === null) return;
+            modal.style.display = 'block';
+        }
 
-            const correctAnswer = cleanAnswer(currentRiddle.answer); 
+        function checkAnswer() {
+            if (currentDoorNumber === null || !currentRiddle) return;
+            
+            const riddleData = currentRiddle;
+            const assignment = assignments[currentDoorNumber];
+            const targetPosition = assignment.targetPosition; 
+            
+            const userAnswer = cleanAnswer(answerInput.value);
+            const correctAnswer = cleanAnswer(riddleData.answer); 
+            
+            // !!! KORREKTUR: Jetzt wird der explizite 'targetLetter' verwendet.
+            const revealedLetter = riddleData.targetLetter || riddleData.answer.toUpperCase().charAt(0);
 
-            if (userAnswerClean === correctAnswer) {
-                processCorrectAnswer(targetPosition, revealedLetter);
-            } else {
-                feedbackMsg.textContent = 'Falsche Antwort. Versuch es nochmal!';
-                feedbackMsg.style.color = '#c0392b';
-                feedbackMsg.style.display = 'block';
-                successMsg.style.display = 'none';
-            }
-        }
-        
-        function processCorrectAnswer(targetPosition, revealedLetter) {
-            feedbackMsg.style.display = 'none';
-            successMsg.style.display = 'block';
-            
-            if (!revealedLetters[targetPosition]) {
-                revealedLetters[targetPosition] = revealedLetter;
-                localStorage.setItem('revealedLetters', JSON.stringify(revealedLetters));
-                
-                const doorEl = document.querySelector(`.door[data-day="${currentDoorNumber}"]`);
-                if (doorEl) {
-                    doorEl.classList.remove('locked');
-                    doorEl.classList.add('opened');
-                }
-                
-                successMsg.textContent = `Richtig! Der Buchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet.`;
-                updateProgressDisplay(); 
-            }
-            renderCalendar(); 
-        }
 
-        
-        // --- 7. EVENT-LISTENER (WICHTIGE ÄNDERUNG HIER) ---
-        
-        // *WICHTIG*: Nur das Schließen-Symbol schließt das Modal
-        closeBtn.onclick = function() {
-            modal.style.display = "none";
-        }
+            if (userAnswer === correctAnswer) {
+                processCorrectAnswer(targetPosition, revealedLetter);
+            } else {
+                feedbackMsg.textContent = 'Falsche Antwort. Versuch es nochmal!';
+                feedbackMsg.style.color = '#c0392b';
+                feedbackMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+            }
+        }
+        
+        function checkMcAnswer(userAnswerClean, targetPosition, revealedLetter) {
+            if (currentRiddle === null) return;
 
-        /* * ENTFERNT: Die folgende Funktion hat den Bug verursacht und wurde gelöscht:
-        * window.onclick = function(event) {
-        * if (event.target === modal) {
-        * modal.style.display = "none";
-        * }
-        * }
-        */
-        
-        submitBtn.onclick = checkAnswer; 
-        
-        answerInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkAnswer();
-            }
-        });
+            const correctAnswer = cleanAnswer(currentRiddle.answer); 
 
-        document.addEventListener('DOMContentLoaded', renderCalendar);
-        
-        // --- 8. SCROLL-RESET FUNKTION ---
-        function resetScrollPosition() {
-            window.scrollTo(0, 0);
-        }
-        window.addEventListener('load', resetScrollPosition);
-    </script>
+            if (userAnswerClean === correctAnswer) {
+                // !!! Der korrekte Buchstabe wurde bereits an die Funktion übergeben
+                processCorrectAnswer(targetPosition, revealedLetter);
+            } else {
+                feedbackMsg.textContent = 'Falsche Antwort. Versuch es nochmal!';
+                feedbackMsg.style.color = '#c0392b';
+                feedbackMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+            }
+        }
+        
+        function processCorrectAnswer(targetPosition, revealedLetter) {
+            feedbackMsg.style.display = 'none';
+            successMsg.style.display = 'block';
+            
+            if (!revealedLetters[targetPosition]) {
+                revealedLetters[targetPosition] = revealedLetter;
+                localStorage.setItem('revealedLetters', JSON.stringify(revealedLetters));
+                
+                const doorEl = document.querySelector(`.door[data-day="${currentDoorNumber}"]`);
+                if (doorEl) {
+                    doorEl.classList.remove('locked');
+                    doorEl.classList.add('opened');
+                }
+                
+                successMsg.textContent = `Richtig! Der Buchstabe "${revealedLetter}" wurde auf Position ${targetPosition} freigeschaltet.`;
+                updateProgressDisplay(); 
+            }
+            renderCalendar(); 
+        }
+
+        
+        // --- 7. EVENT-LISTENER (WICHTIGE ÄNDERUNG HIER) ---
+        
+        // *WICHTIG*: Nur das Schließen-Symbol schließt das Modal
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        /* * ENTFERNT: Die folgende Funktion hat den Bug verursacht und wurde gelöscht:
+        * window.onclick = function(event) {
+        * if (event.target === modal) {
+        * modal.style.display = "none";
+        * }
+        * }
+        */
+        
+        submitBtn.onclick = checkAnswer; 
+        
+        answerInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', renderCalendar);
+        
+        // --- 8. SCROLL-RESET FUNKTION ---
+        function resetScrollPosition() {
+            window.scrollTo(0, 0);
+        }
+        window.addEventListener('load', resetScrollPosition);
+    </script>
 </body>
 </html>
-
-
