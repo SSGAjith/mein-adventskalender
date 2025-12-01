@@ -248,6 +248,17 @@
             cursor: pointer;
             font-size: 1em;
         }
+
+        /* ANPASSUNG: Erfolgsmeldung (grüner Text) mit kleinerem Abstand */
+        #success-message {
+            padding-top: 10px;      /* Abstand nach oben reduziert */
+            padding-bottom: 10px;   /* Abstand nach unten reduziert */
+            margin: 0 !important;   /* Entfernt jegliche Standard-Margins */
+            color: #27ae60;
+            font-weight: bold;
+            display: none;
+        }
+
     </style>
 </head>
 <body>
@@ -285,7 +296,7 @@
             
             <button id="submit-answer" class="riddle-button">Antwort prüfen</button>
             <p id="feedback-message" style="margin-top: 10px; font-weight: bold;"></p>
-            <p id="success-message" style="margin-top: 10px; color: #27ae60; font-weight: bold; display: none;">Richtig! Tür geöffnet!</p>
+            <p id="success-message">Richtig! Tür geöffnet!</p> 
         </div>
     </div>
 
@@ -355,14 +366,21 @@
 
         function cleanAnswer(answer) {
             if (!answer) return "";
-            return answer.toLowerCase()
-                         .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
-                         .replace(/[^a-z0-9]/g, '');
+            let cleaned = answer.toLowerCase()
+                             .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+                             .replace(/[^a-z0-9\s]/g, ''); // Erlaube Leerzeichen temporär
+
+            // Entferne gängige Artikel (mit nachfolgendem Leerzeichen) am Anfang
+            cleaned = cleaned.replace(/^(der|die|das|ein|eine)\s/, '');
+
+            // Entferne alle verbleibenden Leerzeichen und gib die bereinigte Antwort zurück
+            return cleaned.replace(/\s/g, ''); 
         }
         
         function canOpenDoor(day) {
 
-            
+            // DIESE ZEILE WURDE ENTFERNT, UM DIE DATUMSPRÜFUNG WIEDER ZU AKTIVIEREN: return true;
+
             const today = new Date(); 
             const currentMonth = today.getMonth() + 1;
             const currentDay = today.getDate();
@@ -480,6 +498,7 @@
 
 
         function shuffleOptions(options, correctAnswer) {
+            // Die Optionen sollten nur als Text angezeigt werden, die Bereinigung erfolgt beim Vergleichen.
             if (!options.map(cleanAnswer).includes(cleanAnswer(correctAnswer))) {
                 options.push(correctAnswer);
             }
@@ -557,7 +576,7 @@
                     const button = document.createElement('button');
                     button.classList.add('mc-button');
                     button.textContent = optionText;
-                    button.dataset.answer = cleanAnswer(optionText);
+                    button.dataset.answer = cleanAnswer(optionText); // Hier wird die bereinigte Option gespeichert
                     // Den echten Ziel-Buchstaben und die Position übergeben
                     button.onclick = () => checkMcAnswer(button.dataset.answer, targetPosition, revealedLetterCandidate, displayedNumber);
                     mcContainer.appendChild(button);
@@ -587,6 +606,7 @@
             const assignment = assignments[currentDoorNumber];
             const targetPosition = assignment.targetPosition; 
             
+            // Beide Antworten werden mit der bereinigten Funktion verglichen
             const userAnswer = cleanAnswer(answerInput.value);
             const correctAnswer = cleanAnswer(riddleData.answer); 
             
