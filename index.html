@@ -310,30 +310,31 @@
         // RÄTSEL-DATEN MIT OPTIONS FÜR MC
         const allRiddles = [
             { question: "Was ist groß, wenn es jung ist, und klein, wenn es alt ist?", answer: "kerze" },
-            { category: "IMAGE", question: "Was kommt dort raus?", imageSrc: "Mathe1.png", answer: "0", options: ["1", "3", "0", "9"] },
-            { category: "LOGIC_MC", question: "Welcher Würfel passt zu diesem Netz?", answer: "symbolc" },
-            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.png", answer: "spinatlasagne", options: ["Nudelauflauf", "Spinatlasagne", "Gemüsepfanne", "Pizza"] },
-            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn", options: ["Bulgarien", "Iran", "Ungarn", "Italien"] },
-            { question: "Was hat viele Nadeln, kann aber nicht nähen?", answer: "tannenbaum" },
-            { category: "MATH_MC", question: "Löse nach x auf: 2x + 5 = 11", answer: "3" },
-            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 2, 4, 8, 16, ...", answer: "32" },
-            { category: "IMAGE", question: "Was siehst du auf diesem Bild:", imageSrc: "Apfel.jpg", answer: "apfel", options: ["Orange", "Zitrone", "Birne", "Apfel"] },
-            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien", options: ["Serbien", "Kroatien", "Slowakei", "Tschechien"] },
-            { question: "Was kann einen Raum füllen, nimmt aber keinen Platz ein?", answer: "licht" },
-            { question: "Was passiert, wenn man einen grünen Stein ins Rote Meer wirft?", answer: "nass" },
-            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig?", answer: "3" },
-            { question: "Ein Mann läuft eines Abends durch starken Regen aber hat nichts dabei, um sich davor zu schützen. Wieso werden seine Haare trotzdem nicht nass?'", answer: "glatze" },
-            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.png", answer: "pinguin", options: ["Möwe", "Albatros", "Pinguin", "Pelikan"] },
-            { category: "MATH_MC", question: "Lösung von log_2(8)?", answer: "3" },
-            { question: "Was ist immer vor dir, aber du kannst es nicht sehen?", answer: "zukunft" },
             { category: "COUNTRY", question: "Erkenne den Umriss: - Gib das Land ein.", imageSrc: "England.png", answer: "england", options: ["Frankreich", "Irland", "Schottland", "England"] },
-            { category: "SEARCH", question: "Zähle die Buchstaben in diesem Satz!", answer: "30" },
+            { category: "MATH_MC", question: "Lösung von log_2(8)?", answer: "3" },
+            { category: "IMAGE", question: "Errate das Gericht auf dem Bild:", imageSrc: "Spinat lasagne.png", answer: "spinatlasagne", options: ["Nudelauflauf", "Spinatlasagne", "Gemüsepfanne", "Pizza"] },
+            { question: "Was passiert, wenn man einen grünen Stein ins Rote Meer wirft?", answer: "nass" },
+            { category: "MATH_MC", question: "Wie lautet die Ableitung von f(x) = e^{3x}? (A) e^{3x}, (B) 3e^{3x}, (C) $^{3x}/3. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis" },
+            { question: "Ein Mann läuft eines Abends durch starken Regen aber hat nichts dabei, um sich davor zu schützen. Wieso werden seine Haare trotzdem nicht nass?'", answer: "glatze" },
+            { category: "IMAGE", question: "Was kommt dort raus?", imageSrc: "Mathe1.png", answer: "0", options: ["1", "3", "0", "9"] },
+            { category: "MATH_MC", question: "Löse nach x auf: 2x + 5 = 11", answer: "3" },
+            { question: "Was kann einen Raum füllen, nimmt aber keinen Platz ein?", answer: "licht" },
+            { category: "IMAGE", question: "Was siehst du auf diesem Bild:", imageSrc: "Apfel.jpg", answer: "apfel", options: ["Orange", "Zitrone", "Birne", "Apfel"] },
+            { question: "Was ist immer vor dir, aber du kannst es nicht sehen?", answer: "zukunft" },
+            { question: "Was kann man brechen ohne es anzufassen oder zu sehen?", answer: "versprechen" }, 
+            { category: "LOGIC_MC", question: "Wenn 5 Vögel auf einem Zaun sitzen und du 2 erschießt, wie viele bleiben übrig?", answer: "3" },
+            { question: "Was hat viele Nadeln, kann aber nicht nähen?", answer: "tannenbaum" },
+            { category: "IMAGE", question: "Welches Tier ist das?", imageSrc: "Pinguin.png", answer: "pinguin", options: ["Möwe", "Albatros", "Pinguin", "Pelikan"] },
+            { category: "COUNTRY", question: "Welches Land gehört zu dieser Flagge? - Gib das Land ein.", imageSrc: "Kroatien.png", answer: "kroatien", options: ["Serbien", "Kroatien", "Slowakei", "Tschechien"] },
+            { category: "LOGIC_MC", question: "Was ist die nächste Zahl in der Folge: 1, 1, 2, 3, 5, 8, 13, ...", answer: "21" },
+            { category: "LOGIC_MC", question: "Welches Muster passt ins leere Quadrat", imageSrc: "IQ.jpg", answer: "A", options: ["A", "B", "C", "D"] },
             { category: "IMAGE", question: "Was ist das?", imageSrc: "Eichhörnchen.png", answer: "eichhörnchen", options: ["Marder", "Ratte", "Eichhörnchen", "Maulwurf"] },
             { category: "LOGIC_MC", question: "Ein Arzt gibt dir 3 Pillen und sagt, du sollst alle 30 Minuten eine nehmen. Wie lange dauert es?", answer: "60 min", options: ["60 min", "90 min", "30 min", "75 min"] },
             { question: "Je mehr davon da ist, desto weniger sieht man. Was ist es?", answer: "dunkelheit" },
-            { category: "MATH_MC", question: "Wie lautet die Ableitung von f(x) = e^{3x}? (A) e^{3x}, (B) 3e^{3x}, (C) $^{3x}/3. Wähle Option B. Gib 'ergebnis' ein.", answer: "ergebnis" },
-            { question: "Was kann man brechen ohne es anzufassen oder zu sehen?", answer: "versprechen" } 
+            { category: "SEARCH", question: "Zähle die Buchstaben in diesem Satz!", answer: "30" },
+            { category: "COUNTRY", question: "Welche Flagge siehst du? - Gib den Namen des Landes ein.", imageSrc: "Ungarn.png", answer: "ungarn", options: ["Bulgarien", "Iran", "Ungarn", "Italien"] }
         ];
+            
         
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
